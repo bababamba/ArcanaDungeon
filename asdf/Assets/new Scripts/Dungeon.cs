@@ -9,10 +9,12 @@ namespace noname
         public GameObject wallTile, floorTile, upStairsTile, downStairsTile;
         public GameObject doorTile;
         public Level level;
+        public player player;
         private void Start()
         {
             level = new Level();
             level.Create();
+            player.SetLevel(level);
             int pos = 0;
             for(int i = 0; i < level.height; i++, pos += level.width)
             {

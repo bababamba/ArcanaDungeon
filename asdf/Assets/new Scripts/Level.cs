@@ -55,6 +55,7 @@ namespace noname
             PaintRooms();
             foreach (Room r in rooms)
                 Debug.Log(r.Info());
+
         }
         public void InitRooms()
         {
@@ -275,7 +276,7 @@ namespace noname
             {
                 r.MovePosition(xDir, yDir);
             }
-        }
-        
+        }   
     }
+   
 }

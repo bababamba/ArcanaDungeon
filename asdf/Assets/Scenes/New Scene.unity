@@ -525,3 +525,4 @@ MonoBehaviour:
     type: 3}
   doorTile: {fileID: 4153479651194722229, guid: d68a253817161b14f99a8809a475b5c9,
     type: 3}
+  player: {fileID: 1879990493}
