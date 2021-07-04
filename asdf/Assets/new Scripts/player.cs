@@ -5,8 +5,17 @@ using noname;
 
 
 
-public class player : MonoBehaviour
+public class player : Thing
 {
+    /*★Card 클래스 제작 후 주석 제거할 것
+    Card[] deck;
+    Card[] discarded;
+    Card[] hand;
+     */
+
+    bool isturn;    //플레이어턴 동안 true;
+    int hand_limit; //패 장수 제한
+
     public float Movepower;
     SpriteRenderer spriteRenderer;
     Animator anim;
