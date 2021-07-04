@@ -8,9 +8,9 @@ public class Thing : MonoBehaviour
     private int maxhp;
     private int block;
     private int vision_distance;
-    private int cur_pos;    //이 물체의 현재 위치, Level 클래스의 map[]을 좌표처럼 사용한다
-    private int[] route_pos;
-    private int[] FOV;  //Field Of Vision
+    protected int cur_pos;    //이 물체의 현재 위치, Level 클래스의 map[]을 좌표처럼 사용한다
+    protected int[] route_pos;
+    protected bool[] FOV;  //Field Of Vision
 
     private string[] text;  //물체의 이름과 설명
     //Tag 열거형은 잠시 보류, 방법을 좀 더 고민해보기로 했다

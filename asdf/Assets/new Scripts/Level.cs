@@ -20,6 +20,7 @@ namespace noname
 
     public class Level 
     {
+        public List<GameObject> temp_gameobjects;//★시야를 표현하기 위한 임시 게임오브젝트 배열, 나중에 그래픽 표현이나 좌표 체계를 정리할 필요가 있다
         public int width, height, length;
         public int[] map;
 
@@ -33,6 +34,9 @@ namespace noname
         public Rect levelr;
         public int exitnum;
         public static Random rand = new Random();
+
+        public bool[] vision_blockings;
+
         public void Create()
         {
             Random random = new Random();
@@ -53,9 +57,29 @@ namespace noname
                 }
             }
 
+            /*
+            try
+            {
+                temp_gameobjects.Clear();
+                Debug.Log(length);
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e);
+            }*/
+
             PaintRooms();
             foreach (Room r in rooms)
                 Debug.Log(r.Info());
+
+            //map[]에 있는 타일 중 시야를 가리는 친구들을 true로 나타내는 배열 vision_blocking을 완성한다, Visionchecker에서 사용한다
+           
+            
+            /*
+            vision_blockings = new bool[length];
+            for (int i = 0; i < length; i++) {
+                vision_blockings[i] = (Terrain.thing_tag[map[i]] & Terrain.vision_blocking) != 0;
+            } */  
 
         }
         public void InitRooms()

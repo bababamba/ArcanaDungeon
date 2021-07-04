@@ -12,9 +12,9 @@ public class player : Thing
     Card[] discarded;
     Card[] hand;
      */
+    private bool isturn;    //플레이어턴 동안 true;
 
-    bool isturn;    //플레이어턴 동안 true;
-    int hand_limit; //패 장수 제한
+    private int hand_limit; //패 장수 제한
 
     public float Movepower;
     SpriteRenderer spriteRenderer;
@@ -141,6 +141,22 @@ public class player : Thing
         }
 
 
+
+    }
+
+    //★visionchecker을 먼저 실행해 시야에 보이는 부분을 표시하고, Level에 있는 몬스터 배열을 가져와서 좌표를 비교해 몬스터의 위치도 표시하는 함수
+    private void vision_marker() {
+        FOV = new bool[l.length];
+        cur_pos = -l.width *(int)this.transform.position.y  + (int)this.transform.position.x; //★현재 map[]과 player에서 사용하는 좌표가 서로 다르다, 나중에 통합하고 좌표 갱신 함수가 정리되면 이 줄을 지울 것
+        Visionchecker.vision_check(cur_pos % l.width, cur_pos / l.width, 6, FOV, l.vision_blockings);
+
+        /*★
+        for (int i=0; i<l.length; i++){
+            if(FOV[i]){
+                
+            }
+        }
+         */
 
     }
 }

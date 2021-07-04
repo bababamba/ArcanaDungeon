@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +18,7 @@ namespace noname
             currentlevel.Create();
             levels.Add(currentlevel);
             PrintLevel();
+            //Visionchecker.temp_dungeon = this;//★visionchecker에서 현재 level을 원활하게 가져오기 위해 넣었다, 나중에 더 나은 방법을 발견하면 그걸 사용하자
         }
         public void Nextlevel()
         {
@@ -69,6 +71,13 @@ namespace noname
                     }
                     GameObject newTile = Instantiate(tileObject, new Vector2(j - pos - 1, -i - 1), Quaternion.identity) as GameObject;
                     newTile.transform.SetParent(this.transform, false);
+                    /*try
+                    {
+                        currentlevel.temp_gameobjects.Add(newTile);//★나중에 그래픽 표현 방법이랑 좌표 체계 정리해야 한다
+                    }
+                    catch (Exception e) {
+                        Debug.Log(e);
+                    }*/
                 }
             }
         }//현재 레벨의 맵 화면상에 출력
