@@ -29,13 +29,14 @@ namespace noname
         public List<Room> rooms;
         Painter painter;
 
-        public LevelSize levelsize = LevelSize.NORMAL;
+        public LevelSize levelsize = LevelSize.SMALL;
         public int roomNum;
         public Rect levelr;
         public int exitnum;
         public static Random rand = new Random();
 
         public bool[] vision_blockings;
+        
 
         public void Create()
         {
@@ -43,13 +44,13 @@ namespace noname
             roomNum = random.Next(0, 6) + (int)levelsize;
             InitRooms();
 
-            foreach(Room r1 in rooms)
+            foreach (Room r1 in rooms)
             {
-                foreach(Room r2 in rooms)
+                foreach (Room r2 in rooms)
                 {
                     if (r1.GetHashCode() == r2.GetHashCode())
                         continue;
-                    if(r1.IsNeighbour(r2))
+                    if (r1.IsNeighbour(r2))
                     {
                         r1.Connect(r2);
                         r2.Connect(r1);
@@ -57,29 +58,20 @@ namespace noname
                 }
             }
 
-            /*
-            try
-            {
-                temp_gameobjects.Clear();
-                Debug.Log(length);
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e);
-            }*/
-
             PaintRooms();
             foreach (Room r in rooms)
                 Debug.Log(r.Info());
 
+
             //map[]에 있는 타일 중 시야를 가리는 친구들을 true로 나타내는 배열 vision_blocking을 완성한다, Visionchecker에서 사용한다
-           
-            
-            /*
+
+
+
+            temp_gameobjects = new List<GameObject>();
             vision_blockings = new bool[length];
             for (int i = 0; i < length; i++) {
                 vision_blockings[i] = (Terrain.thing_tag[map[i]] & Terrain.vision_blocking) != 0;
-            } */  
+            }
 
         }
         public void InitRooms()
@@ -259,8 +251,8 @@ namespace noname
                     r.placed = true;
                     if (!r.IsNeighbour(d) && r.GetType() != typeof(DownStairsRoom))
                     {
-                        Room rm = new EmptyRoom();
-                        rooms.Add(rm);
+                        //Room rm = new EmptyRoom();
+                        //rooms.Add(rm);
                         num++;
                     }
                     ent = r;

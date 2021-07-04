@@ -12,14 +12,17 @@ namespace noname
         public List<Level> levels = new List<Level>();
         public Level currentlevel;
         public bool changed = false;
-        private void Start()
-        {
+
+        public player Plr;  //★player 클래스에서 Level을 활용하기 위한 임시 변수, 나중에 GameManager와 계층 구조를 정리하면 아마 없애야 할 것이다
+
+        private void Start() {
             currentlevel = new Level();
             currentlevel.Create();
             levels.Add(currentlevel);
             PrintLevel();
-            //Visionchecker.temp_dungeon = this;//★visionchecker에서 현재 level을 원활하게 가져오기 위해 넣었다, 나중에 더 나은 방법을 발견하면 그걸 사용하자
-        }
+            Plr.SetLevel(currentlevel);//★
+            Visionchecker.temp_dungeon = this;//★visionchecker에서 현재 level을 원활하게 가져오기 위해 넣었다, 나중에 더 나은 방법을 발견하면 그걸 사용하자
+    }
         public void Nextlevel()
         {
             Level l = new Level();
@@ -71,13 +74,13 @@ namespace noname
                     }
                     GameObject newTile = Instantiate(tileObject, new Vector2(j - pos - 1, -i - 1), Quaternion.identity) as GameObject;
                     newTile.transform.SetParent(this.transform, false);
-                    /*try
+                    try
                     {
                         currentlevel.temp_gameobjects.Add(newTile);//★나중에 그래픽 표현 방법이랑 좌표 체계 정리해야 한다
                     }
                     catch (Exception e) {
                         Debug.Log(e);
-                    }*/
+                    }
                 }
             }
         }//현재 레벨의 맵 화면상에 출력
