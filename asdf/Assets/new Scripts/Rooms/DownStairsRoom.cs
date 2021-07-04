@@ -10,8 +10,8 @@ namespace noname.rooms
         public DownStairsRoom()
         {
             SizePicker sp = new SizePicker();
-            width = sp.Pick(MINROOMSIZE + 1, MAXROOMSIZE - 2);
-            height = sp.Pick(MINROOMSIZE + 1, MAXROOMSIZE - 2);
+            width = 4; // sp.Pick(MINROOMSIZE + 1, MAXROOMSIZE - 2);
+            height = 4; // sp.Pick(MINROOMSIZE + 1, MAXROOMSIZE - 2);
             DefaultSet();
         }
         public override void Paint(Level l)

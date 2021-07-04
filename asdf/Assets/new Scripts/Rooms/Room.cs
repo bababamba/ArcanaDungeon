@@ -11,7 +11,7 @@ namespace noname.rooms
         public const int MAXROOMSIZE = 9;
         public int width, height;
         public bool placed = false;
-
+        public double angle;
         public bool IsNeighbour(Room r)
         {
             Rect rect = Intersect(this, r);
