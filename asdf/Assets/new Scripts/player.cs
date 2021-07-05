@@ -23,7 +23,9 @@ public class player : Thing
     public Vector3 movement;
     
     public Vector2 PlayerPos = new Vector2(0,0);
+    public Vector2 MoveVector = new Vector2(0, 0);
     public Level l;
+    int movetimer = 0;
     int dir = 0;
 
 
@@ -45,10 +47,7 @@ public class player : Thing
         if (Input.GetButton("Horizontal"))
             spriteRenderer.flipX = Input.GetAxisRaw("Horizontal") == -1;
 
-        if (rigid.velocity.normalized.x == 0 && rigid.velocity.normalized.y == 0)
-            anim.SetBool("iswalking", false);
-        else
-            anim.SetBool("iswalking", true);
+        
     
 
 
@@ -68,81 +67,130 @@ public class player : Thing
         return l.map[(int)a];//jabassibo
 
     }
+    
 
     private void FixedUpdate()
     {
-        
-
-
-        //left
-        if (Input.GetAxisRaw("Horizontal") == -1 && !anim.GetBool("iswalking"))
+        if (movetimer == 0)
         {
-            vision_marker();//★나중에 플레이어의 Turn() 함수가 완성되면 그쪽에서 1번만 실행되게 옮길 것, 아래의 같은 함수들도 동일
-            PlayerPos = new Vector2((float)System.Math.Round(rigid.position.x - 1), (float)System.Math.Round(rigid.position.y));
-            Debug.Log(PlayerPos.y);
-            if (CheckLevel(PlayerPos.x, PlayerPos.y) != 2)
-            {
-                rigid.AddForce(Vector2.left * Movepower, ForceMode2D.Impulse);
-                anim.SetBool("iswalking", true);
 
-                
-                dir = 1;
+            //left
+            if (Input.GetAxisRaw("Horizontal") == -1 && !anim.GetBool("iswalking"))
+            {
+                vision_marker();//★나중에 플레이어의 Turn() 함수가 완성되면 그쪽에서 1번만 실행되게 옮길 것, 아래의 같은 함수들도 동일
+                PlayerPos = new Vector2(Mathf.Round(rigid.position.x - 1), Mathf.Round(rigid.position.y));
+                Debug.Log(PlayerPos);
+                if (CheckLevel(PlayerPos.x, PlayerPos.y) != 2)
+                {
+
+                    anim.SetBool("iswalking", true);
+                    movetimer = 10;
+
+                    dir = 1;
+                }
+            }
+            //right
+            else if (Input.GetAxisRaw("Horizontal") == 1 && !anim.GetBool("iswalking"))
+            {
+                vision_marker();//★
+
+
+                PlayerPos = new Vector2(Mathf.Round(rigid.position.x + 1), Mathf.Round(rigid.position.y));
+                if (CheckLevel(PlayerPos.x, PlayerPos.y) != 2)
+                {
+
+                    anim.SetBool("iswalking", true);
+                    movetimer = 10;
+
+                    dir = 2;
+                }
+
+            }
+            //up
+            else if (Input.GetAxisRaw("Vertical") == 1 && !anim.GetBool("iswalking"))
+            {
+                vision_marker();//★
+
+
+                PlayerPos = new Vector2(Mathf.Round(rigid.position.x), Mathf.Round(rigid.position.y + 1));
+                if (CheckLevel(PlayerPos.x, PlayerPos.y) != 2)
+                {
+
+                    anim.SetBool("iswalking", true);
+                    movetimer = 10;
+
+                    dir = 3;
+                }
+
+            }
+            //down
+            else if (Input.GetAxisRaw("Vertical") == -1 && !anim.GetBool("iswalking"))
+            {
+                vision_marker();//★
+
+
+                PlayerPos = new Vector2(Mathf.Round(rigid.position.x), Mathf.Round(rigid.position.y - 1));
+                if (CheckLevel(PlayerPos.x, PlayerPos.y) != 2)
+                {
+
+                    anim.SetBool("iswalking", true);
+                    movetimer = 10;
+
+                    dir = 4;
+                }
+
             }
         }
-        //right
-        else if (Input.GetAxisRaw("Horizontal") == 1 && !anim.GetBool("iswalking"))
+        if(movetimer>0)
+        movetimer--;
+        //playermove
+        switch (dir)
         {
-            vision_marker();//★
-            rigid.AddForce(Vector2.right * Movepower, ForceMode2D.Impulse);
-            anim.SetBool("iswalking", true);
-            PlayerPos = new Vector2(rigid.position.x + 1, rigid.position.y);
-            dir = 2;
-
-        }
-        //up
-        else if (Input.GetAxisRaw("Vertical") == 1 && !anim.GetBool("iswalking"))
-        {
-            vision_marker();//★
-            rigid.AddForce(Vector2.up * Movepower, ForceMode2D.Impulse);
-            anim.SetBool("iswalking", true);
-            PlayerPos = new Vector2(rigid.position.x , rigid.position.y + 1);
-            dir = 3;
-
-        }
-        //down
-        else if (Input.GetAxisRaw("Vertical") == -1 && !anim.GetBool("iswalking"))
-        {
-            vision_marker();//★
-            rigid.AddForce(Vector2.down * Movepower, ForceMode2D.Impulse);
-            anim.SetBool("iswalking", true);
-            PlayerPos = new Vector2(rigid.position.x , rigid.position.y - 1);
-            dir = 4;
-
-        }
-
-        if (rigid.position.x <= PlayerPos.x && anim.GetBool("iswalking")&& dir == 1)
-                {   
-                    rigid.velocity = new Vector2(0, 0);
+            case 1:
+                MoveVector = new Vector2(rigid.position.x - 0.2f, rigid.position.y);
+                rigid.position = MoveVector;
+                if (rigid.position.x <= PlayerPos.x)
+                {
+                    dir = 0;
                     anim.SetBool("iswalking", false);
                     rigid.position = PlayerPos;
-                    //Debug.Log("2");
+                    
+                    Debug.Log("2");
                 }
-        else if (rigid.position.x >= PlayerPos.x && anim.GetBool("iswalking") && dir == 2)
-        {
-            rigid.velocity = new Vector2(0, 0);
-            anim.SetBool("iswalking", false);
-        }
-        else if (rigid.position.y >= PlayerPos.y && anim.GetBool("iswalking") && dir == 3)
-        {
-            rigid.velocity = new Vector2(0, 0);
-            anim.SetBool("iswalking", false);
-        }
-        else if (rigid.position.y <= PlayerPos.y && anim.GetBool("iswalking") && dir == 4)
-        {
-            rigid.velocity = new Vector2(0, 0);
-            anim.SetBool("iswalking", false);
-        }
+                break;
+            case 2:
+                MoveVector = new Vector2(rigid.position.x + 0.2f, rigid.position.y);
+                rigid.position = MoveVector;
+                if (rigid.position.x >= PlayerPos.x)
+                {
+                    rigid.position = PlayerPos;
+                    dir = 0;
+                    anim.SetBool("iswalking", false);
+                }
+                break;
+            case 3:
+                MoveVector = new Vector2(rigid.position.x, rigid.position.y + 0.2f);
+                rigid.position = MoveVector;
+                if (rigid.position.y >= PlayerPos.y) {
+                    rigid.position = PlayerPos;
+                    dir = 0;
+                    anim.SetBool("iswalking", false);
+                }
+                break;
+            case 4:
+                MoveVector = new Vector2(rigid.position.x, rigid.position.y - 0.2f);
+                rigid.position = MoveVector;
+                if (rigid.position.y <= PlayerPos.y)
+                {
+                    rigid.position = PlayerPos;
+                    dir = 0;
+                    anim.SetBool("iswalking", false);
+                }
+                break;
+            default:
+                break;
 
+        }
 
 
     }

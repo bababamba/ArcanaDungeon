@@ -242,7 +242,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 20
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -417,6 +417,7 @@ MonoBehaviour:
   rigid: {fileID: 0}
   movement: {x: 0, y: 0, z: 0}
   PlayerPos: {x: 0, y: 0}
+  MoveVector: {x: 0, y: 0}
 --- !u!850595691 &1982056492
 LightingSettings:
   m_ObjectHideFlags: 0
