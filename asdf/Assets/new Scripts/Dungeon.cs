@@ -16,7 +16,7 @@ namespace noname
         public player Plr;  //★player 클래스에서 Level을 활용하기 위한 임시 변수, 나중에 GameManager와 계층 구조를 정리하면 아마 없애야 할 것이다
 
         private void Start() {
-            currentlevel = new Level();
+            currentlevel = new RegularLevel();
             currentlevel.Create();
             levels.Add(currentlevel);
             PrintLevel();
@@ -25,7 +25,7 @@ namespace noname
     }
         public void Nextlevel()
         {
-            Level l = new Level();
+            Level l = new RegularLevel();
             //기존에 깔린 판 치우기(어차피 레벨 자체에 맵 정보는 저장되어 있으니 상관없음)
             Transform[] allChildren = GetComponentsInChildren<Transform>();
             foreach (Transform child in allChildren)

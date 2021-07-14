@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using noname;
+using noname.rooms;
+using Terrain = noname.Terrain;
+
 
 
 
@@ -207,7 +210,16 @@ public class player : Thing
 
 
     }
-
+    private void Spawn()
+    {
+        for(int i = 0; i < l.map.Length; i++)
+        {
+            //if()
+            //else
+             //   continue;
+        }
+        Debug.Log("Cannot find Upstairs.");
+    }//맵에 입장 시, 계단방(입구) 아무데나 스폰
     //★visionchecker을 먼저 실행해 시야에 보이는 부분을 표시하고, Level에 있는 몬스터 배열을 가져와서 좌표를 비교해 몬스터의 위치도 표시하는 함수
     private void vision_marker() {
         FOV = new bool[this.l.length];
