@@ -9,20 +9,28 @@ namespace noname
     {
         public GameObject wallTile, floorTile, upStairsTile, downStairsTile;
         public GameObject doorTile;
+        public GameObject Player;
         public List<Level> levels = new List<Level>();
         public Level currentlevel;
         public bool changed = false;
 
-        public player Plr;  //★player 클래스에서 Level을 활용하기 위한 임시 변수, 나중에 GameManager와 계층 구조를 정리하면 아마 없애야 할 것이다
+        player Plr;  //★player 클래스에서 Level을 활용하기 위한 임시 변수, 나중에 GameManager와 계층 구조를 정리하면 아마 없애야 할 것이다
 
-        private void Start() {
+        private void Start() 
+        {
             currentlevel = new RegularLevel();
             currentlevel.Create();
             levels.Add(currentlevel);
             PrintLevel();
-            Plr.SetLevel(currentlevel);//★
+            
+            Player = Instantiate(Player, new Vector2(0, 0), Quaternion.identity)as GameObject;
             Visionchecker.temp_dungeon = this;//★visionchecker에서 현재 level을 원활하게 가져오기 위해 넣었다, 나중에 더 나은 방법을 발견하면 그걸 사용하자
-    }
+            Plr = Player.GetComponent<player>();
+            Plr.SetLevel(currentlevel);//★
+            Plr.Spawn();
+            Player.transform.position = Plr.PlayerPos;
+            
+        }
         public void Nextlevel()
         {
             Level l = new RegularLevel();

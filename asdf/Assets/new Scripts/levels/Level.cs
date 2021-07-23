@@ -59,8 +59,8 @@ namespace noname
             }
 
             PaintRooms();
-            foreach (Room r in rooms)
-                Debug.Log(r.Info());
+            //foreach (Room r in rooms)
+             //   Debug.Log(r.Info());
 
 
             //map[]에 있는 타일 중 시야를 가리는 친구들을 true로 나타내는 배열 vision_blocking을 완성한다, Visionchecker에서 사용한다

@@ -26,7 +26,7 @@ namespace noname
             map = new int[length];
             for (int i = 0; i < length; i++)
                 map[i] = Terrain.WALL;
-        }
+        }//무한루프 발생시 여기서 조절
         public override void PlaceRooms()
         {
             rooms[0].SetPosition(0, 0);
@@ -88,7 +88,7 @@ namespace noname
                         }
                         r.SetPosition(xOrigin + (int)(count * Math.Sin(d.angle)), yOrigin + (int)(count * Math.Cos(d.angle)));
                         count++;
-                        if (count > 50)//만약에 방 겹침이나 무한루프 이슈 발생시, count 값을 늘려볼 것.
+                        if (count > 200)//만약에 방 겹침이나 무한루프 이슈 발생시, count 값을 늘려볼 것.
                         {
                             Debug.Log("ERR");
                             break;

@@ -24,11 +24,12 @@ public class player : Thing
     public SpriteRenderer spriteRenderer;
     public Animator anim;
     public Rigidbody2D rigid;
+    public Transform tr;
     public Vector3 movement;
     
     public Vector2 PlayerPos = new Vector2(0,0);
     public Vector2 MoveVector = new Vector2(0, 0);
-    public Level l;
+    public static Level l;
 
 
     int MoveTimer = 0;
@@ -41,9 +42,14 @@ public class player : Thing
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
+        tr = GetComponent<Transform>();
     }
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
+        rigid = GetComponent<Rigidbody2D>();
+        tr = GetComponent<Transform>();
     }
 
     // Update is called once per frame
@@ -61,7 +67,7 @@ public class player : Thing
     }
     public void SetLevel(Level Le)
     {
-        this.l = Le;
+        l = Le;
 
     }
     public int CheckLevel(float x, float y)
@@ -92,8 +98,8 @@ public class player : Thing
             {
                 
                 PlayerPos = new Vector2(Mathf.Round(rigid.position.x - 1), Mathf.Round(rigid.position.y));
-                Debug.Log(PlayerPos);
-                if (CheckLevel(PlayerPos.x, PlayerPos.y) != 2)
+                //Debug.Log(PlayerPos);
+                if (CheckLevel(PlayerPos.x, PlayerPos.y) != Terrain.WALL)
                 {
 
                     anim.SetBool("iswalking", true);
@@ -109,7 +115,7 @@ public class player : Thing
 
 
                 PlayerPos = new Vector2(Mathf.Round(rigid.position.x + 1), Mathf.Round(rigid.position.y));
-                if (CheckLevel(PlayerPos.x, PlayerPos.y) != 2)
+                if (CheckLevel(PlayerPos.x, PlayerPos.y) != Terrain.WALL)
                 {
 
                     anim.SetBool("iswalking", true);
@@ -126,7 +132,7 @@ public class player : Thing
 
 
                 PlayerPos = new Vector2(Mathf.Round(rigid.position.x), Mathf.Round(rigid.position.y + 1));
-                if (CheckLevel(PlayerPos.x, PlayerPos.y) != 2)
+                if (CheckLevel(PlayerPos.x, PlayerPos.y) != Terrain.WALL)
                 {
 
                     anim.SetBool("iswalking", true);
@@ -143,7 +149,7 @@ public class player : Thing
 
 
                 PlayerPos = new Vector2(Mathf.Round(rigid.position.x), Mathf.Round(rigid.position.y - 1));
-                if (CheckLevel(PlayerPos.x, PlayerPos.y) != 2)
+                if (CheckLevel(PlayerPos.x, PlayerPos.y) != Terrain.WALL)
                 {
 
                     anim.SetBool("iswalking", true);
@@ -207,22 +213,31 @@ public class player : Thing
                 break;
 
         }
-
+        
 
     }
-    private void Spawn()
+    public void Spawn()
     {
         for(int i = 0; i < l.map.Length; i++)
         {
-            //if()
-            //else
-             //   continue;
+            if (l.map[i] == Terrain.STAIRS_UP)
+            {
+                int x = i % l.levelr.Width();
+                int y = i / l.levelr.Width();
+                PlayerPos = new Vector2(x - 1, -y - 1);
+                this.rigid.position = PlayerPos;
+                vision_marker();
+                Debug.Log("Player spawned at" + PlayerPos);
+                return;
+            }
+            else
+                continue;
         }
         Debug.Log("Cannot find Upstairs.");
-    }//맵에 입장 시, 계단방(입구) 아무데나 스폰
+    }//맵에 입장 시, 계단 자리에 스폰
     //★visionchecker을 먼저 실행해 시야에 보이는 부분을 표시하고, Level에 있는 몬스터 배열을 가져와서 좌표를 비교해 몬스터의 위치도 표시하는 함수
     private void vision_marker() {
-        FOV = new bool[this.l.length];
+        FOV = new bool[l.length];
         //cur_pos = -l.width *(int)this.transform.position.y  + (int)this.transform.position.x; //★현재 map[]과 player에서 사용하는 좌표가 서로 다르다, 나중에 통합하고 좌표 갱신 함수가 정리되면 이 줄을 지울 것
         cur_pos = whereishe();
         Visionchecker.vision_check(cur_pos % l.width, cur_pos / l.width, 6, FOV, l.vision_blockings);

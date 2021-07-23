@@ -13,6 +13,8 @@ MonoImporter:
       type: 3}
   - doorTile: {fileID: 4153479651194722229, guid: d68a253817161b14f99a8809a475b5c9,
       type: 3}
+  - Player: {fileID: 1096753644826888910, guid: d24fefa828860e043963df71865a9d52,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
