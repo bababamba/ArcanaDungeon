@@ -48,6 +48,10 @@ namespace noname
             levels.Add(l);
             currentlevel = l;
             PrintLevel();
+
+            Plr.SetLevel(currentlevel);
+            Plr.Spawn();
+            Player.transform.position = Plr.PlayerPos;
         }//여기 판 갈아주세요 (판 치우고 새로 깔아야 한다.)
         public void PrintLevel()
         {
@@ -95,7 +99,7 @@ namespace noname
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space) && changed == false)
+            if (Plr.CheckLevel(Plr.PlayerPos.x, Plr.PlayerPos.y) == Terrain.STAIRS_DOWN && changed == false)
             {
                 Nextlevel();
                 changed = true;

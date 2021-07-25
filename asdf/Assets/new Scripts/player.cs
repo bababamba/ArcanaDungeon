@@ -15,6 +15,8 @@ public class player : Thing
     Card[] discarded;
     Card[] hand;
      */
+
+    public player me = null;
     private bool isturn;    //플레이어턴 동안 true;
 
     private int hand_limit; //패 장수 제한
@@ -29,7 +31,7 @@ public class player : Thing
     
     public Vector2 PlayerPos = new Vector2(0,0);
     public Vector2 MoveVector = new Vector2(0, 0);
-    public static Level l;
+    public Level l;
 
 
     int MoveTimer = 0;
@@ -43,6 +45,8 @@ public class player : Thing
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
         tr = GetComponent<Transform>();
+        if (me == null)
+            me = this;
     }
     void Start()
     {
@@ -50,6 +54,8 @@ public class player : Thing
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody2D>();
         tr = GetComponent<Transform>();
+        if (me == null)
+            me = this;
     }
 
     // Update is called once per frame
@@ -73,7 +79,7 @@ public class player : Thing
     public int CheckLevel(float x, float y)
     {
         float a = y+1;
-        a *= -l.levelr.Width();
+        a *= -me.l.levelr.Width();
         a += x+1;
   
         return l.map[(int)a];//jabassibo
@@ -225,7 +231,7 @@ public class player : Thing
                 int x = i % l.levelr.Width();
                 int y = i / l.levelr.Width();
                 PlayerPos = new Vector2(x - 1, -y - 1);
-                this.rigid.position = PlayerPos;
+                me.rigid.position = PlayerPos;
                 vision_marker();
                 Debug.Log("Player spawned at" + PlayerPos);
                 return;

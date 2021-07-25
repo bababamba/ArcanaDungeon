@@ -24,10 +24,7 @@ namespace noname
         public int width, height, length;
         public int[] map;
 
-        public int entrance;
-        public int exit;
         public List<Room> rooms;
-        Painter painter;
 
         public LevelSize levelsize = LevelSize.SMALL;
         public int roomNum;

@@ -9,7 +9,7 @@ using noname;
 public class Visionchecker : MonoBehaviour
 {
     public static Dungeon temp_dungeon; //★나중에 GameManager와 Dungeon, Level 등을 정리해서 좀 더 체계적으로 정리해야 한다
-    private static Level lvl;
+    public static Level lvl;
 
     public static int[][] rounding;
 
