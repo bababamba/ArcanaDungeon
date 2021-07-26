@@ -31,12 +31,11 @@ public class player : Thing
     
     public Vector2 PlayerPos = new Vector2(0,0);
     public Vector2 MoveVector = new Vector2(0, 0);
-    public Level l;
-
 
     int MoveTimer = 0;
     int dir = 0;
 
+    public bool[] FOV;
 
     // Start is called before the first frame update
     private void Awake()
@@ -71,25 +70,21 @@ public class player : Thing
 
 
     }
-    public void SetLevel(Level Le)
-    {
-        l = Le;
 
-    }
     public int CheckLevel(float x, float y)
     {
         float a = y+1;
-        a *= -me.l.levelr.Width();
+        a *= -GameManager.cur_level.levelr.Width();
         a += x+1;
   
-        return l.map[(int)a];//jabassibo
+        return GameManager.cur_level.map[(int)a];//jabassibo
 
     }
     public int whereishe()
     {
         int here=0;
         here = (int)Mathf.Round(rigid.position.y + 1);
-        here *= -l.levelr.Width();
+        here *= -GameManager.cur_level.levelr.Width();
         here += (int)Mathf.Round(rigid.position.x + 1);
         return here;
     }
@@ -224,12 +219,12 @@ public class player : Thing
     }
     public void Spawn()
     {
-        for(int i = 0; i < l.map.Length; i++)
+        for(int i = 0; i < GameManager.cur_level.map.Length; i++)
         {
-            if (l.map[i] == Terrain.STAIRS_UP)
+            if (GameManager.cur_level.map[i] == Terrain.STAIRS_UP)
             {
-                int x = i % l.levelr.Width();
-                int y = i / l.levelr.Width();
+                int x = i % GameManager.cur_level.levelr.Width();
+                int y = i / GameManager.cur_level.levelr.Width();
                 PlayerPos = new Vector2(x - 1, -y - 1);
                 me.rigid.position = PlayerPos;
                 vision_marker();
@@ -243,19 +238,19 @@ public class player : Thing
     }//맵에 입장 시, 계단 자리에 스폰
     //★visionchecker을 먼저 실행해 시야에 보이는 부분을 표시하고, Level에 있는 몬스터 배열을 가져와서 좌표를 비교해 몬스터의 위치도 표시하는 함수
     private void vision_marker() {
-        FOV = new bool[l.length];
-        //cur_pos = -l.width *(int)this.transform.position.y  + (int)this.transform.position.x; //★현재 map[]과 player에서 사용하는 좌표가 서로 다르다, 나중에 통합하고 좌표 갱신 함수가 정리되면 이 줄을 지울 것
+        FOV = new bool[GameManager.cur_level.length];
+        //cur_pos = -GameManager.cur_level.width *(int)this.transform.position.y  + (int)this.transform.position.x; //★현재 map[]과 player에서 사용하는 좌표가 서로 다르다, 나중에 통합하고 좌표 갱신 함수가 정리되면 이 줄을 지울 것
         cur_pos = whereishe();
-        Visionchecker.vision_check(cur_pos % l.width, cur_pos / l.width, 6, FOV, l.vision_blockings);
+        Visionchecker.vision_check(cur_pos % GameManager.cur_level.width, cur_pos / GameManager.cur_level.width, 6, FOV);
 
 
         //★나중에 단순히 그림자를 씌우고 벗기는 것 이외에 몬스터의 모습을 지우고 다시 나타나게 하는 것까지 넣어줘야 한다, 아니면 그건 몬스터의 vision_searcher에 넣던가
         //프리팹의 RGB값은 0~1 범위로 나타내는 게 기본값같다
-        for (int i=0; i<l.length; i++){
+        for (int i=0; i< GameManager.cur_level.length; i++){
             if(FOV[i]){
-                l.temp_gameobjects[i].GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+                GameManager.cur_level.temp_gameobjects[i].GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             }else{
-                l.temp_gameobjects[i].GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+                GameManager.cur_level.temp_gameobjects[i].GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
             }
         } 
     }

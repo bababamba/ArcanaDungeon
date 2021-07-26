@@ -14,8 +14,6 @@ namespace noname
         public Level currentlevel;
         public bool changed = false;
 
-        player Plr;  //★player 클래스에서 Level을 활용하기 위한 임시 변수, 나중에 GameManager와 계층 구조를 정리하면 아마 없애야 할 것이다
-
         private void Start() 
         {
             currentlevel = new RegularLevel();
@@ -25,10 +23,11 @@ namespace noname
             
             Player = Instantiate(Player, new Vector2(0, 0), Quaternion.identity)as GameObject;
             Visionchecker.temp_dungeon = this;//★visionchecker에서 현재 level을 원활하게 가져오기 위해 넣었다, 나중에 더 나은 방법을 발견하면 그걸 사용하자
-            Plr = Player.GetComponent<player>();
-            Plr.SetLevel(currentlevel);//★
-            Plr.Spawn();
-            Player.transform.position = Plr.PlayerPos;
+            GameManager.Plr = Player.GetComponent<player>();
+            GameManager.Plr_object = Player;
+            GameManager.cur_level = currentlevel;
+            GameManager.Plr.Spawn();
+            Player.transform.position = GameManager.Plr.PlayerPos;
             
         }
         public void Nextlevel()
@@ -49,9 +48,9 @@ namespace noname
             currentlevel = l;
             PrintLevel();
 
-            Plr.SetLevel(currentlevel);
-            Plr.Spawn();
-            Player.transform.position = Plr.PlayerPos;
+            GameManager.cur_level = currentlevel;
+            GameManager.Plr.Spawn();
+            Player.transform.position = GameManager.Plr.PlayerPos;
         }//여기 판 갈아주세요 (판 치우고 새로 깔아야 한다.)
         public void PrintLevel()
         {
@@ -99,7 +98,7 @@ namespace noname
 
         private void Update()
         {
-            if (Plr.CheckLevel(Plr.PlayerPos.x, Plr.PlayerPos.y) == Terrain.STAIRS_DOWN && changed == false)
+            if (GameManager.Plr.CheckLevel(GameManager.Plr.PlayerPos.x, GameManager.Plr.PlayerPos.y) == Terrain.STAIRS_DOWN && changed == false)
             {
                 Nextlevel();
                 changed = true;

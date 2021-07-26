@@ -8,4 +8,8 @@ public class GameManager : MonoBehaviour
     public const int burnt = 0x01;
     public const int stun = 0x02;
 
+    public static player Plr;
+    public static GameObject Plr_object;
+    public static noname.Level cur_level;
+
 }

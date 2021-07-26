@@ -8,9 +8,8 @@ public class Thing : MonoBehaviour
     private int maxhp;
     private int block;
     private int vision_distance;
-    protected int cur_pos;    //이 물체의 현재 위치, Level 클래스의 map[]을 좌표처럼 사용한다
-    protected int[] route_pos;
-    protected bool[] FOV;  //Field Of Vision
+    public int cur_pos;    //이 물체의 현재 위치, Level 클래스의 map[]을 좌표처럼 사용한다
+    public List<int> route_pos = new List<int>();  //목적지까지의 이동 경로, 이동은 항상 route_pos[0]으로 이동해서 진행된다
 
     private string[] text;  //물체의 이름과 설명
 

@@ -24,7 +24,7 @@ public class Visionchecker : MonoBehaviour
     }
 
     //x와 y는 캐릭터의 pos를 levelr의 width로 나눠서 구한다
-    public static void vision_check(int x, int y, int distance, bool[] FOV, bool[] blockings) {
+    public static void vision_check(int x, int y, int distance, bool[] FOV) {
         temp_Visionchecker();//★사실 이건 매번 실행되는 게 아니라 1번만 실행되야 한다
 
         lvl = temp_dungeon.currentlevel;
@@ -33,23 +33,23 @@ public class Visionchecker : MonoBehaviour
         FOV[x + y * lvl.width] = true;
 
         //scanOctant는 8등분된 원만큼 시야를 탐색한다
-        scanOctant(FOV, blockings, distance, x, y, 1, 0, 1, 1, 1, false); //오른쪽 아래, 왼쪽
-        scanOctant(FOV, blockings, distance, x, y, 1, 0, 1, 1, 1, true);    //오른쪽 아래, 오른쪽
+        scanOctant(FOV, distance, x, y, 1, 0, 1, 1, 1, false); //오른쪽 아래, 왼쪽
+        scanOctant(FOV, distance, x, y, 1, 0, 1, 1, 1, true);    //오른쪽 아래, 오른쪽
 
-        scanOctant(FOV, blockings, distance, x, y, 1, 0, 1, 1, -1, true);   //오른쪽 위, 오른쪽
-        scanOctant(FOV, blockings, distance, x, y, 1, 0, 1, 1, -1, false);    //오른쪽 위, 왼쪽
+        scanOctant(FOV, distance, x, y, 1, 0, 1, 1, -1, true);   //오른쪽 위, 오른쪽
+        scanOctant(FOV, distance, x, y, 1, 0, 1, 1, -1, false);    //오른쪽 위, 왼쪽
 
-        scanOctant(FOV, blockings, distance, x, y, 1, 0, 1, -1, -1, false);   //왼쪽 위, 오른쪽
-        scanOctant(FOV, blockings, distance, x, y, 1, 0, 1, -1, -1, true);  //왼쪽 위, 왼쪽
+        scanOctant(FOV, distance, x, y, 1, 0, 1, -1, -1, false);   //왼쪽 위, 오른쪽
+        scanOctant(FOV, distance, x, y, 1, 0, 1, -1, -1, true);  //왼쪽 위, 왼쪽
 
-        scanOctant(FOV, blockings, distance, x, y, 1, 0, 1, -1, 1, true);   //왼쪽 아래, 왼쪽 
-        scanOctant(FOV, blockings, distance, x, y, 1, 0, 1, -1, 1, false);    //왼쪽 아래, 오른쪽
+        scanOctant(FOV, distance, x, y, 1, 0, 1, -1, 1, true);   //왼쪽 아래, 왼쪽 
+        scanOctant(FOV, distance, x, y, 1, 0, 1, -1, 1, false);    //왼쪽 아래, 오른쪽
     }
 
     //row는 플레이어로부터 얼마나 떨어진 곳부터 스캔할지
     //lSlope, rSlope는 각각 스캔을 시작하고 끝낼 경계선의 기울기 역수
     //x_mirro와 y_mirror는 각각 x좌표와 y좌표의 부호가 바뀜을 의미하며, xy_mirror는 y=x 혹은 y=-x에 대해 대칭을 의미한다
-    private static void scanOctant(bool[] FOV, bool[] blockings, int distance, int x, int y, int row,
+    private static void scanOctant(bool[] FOV, int distance, int x, int y, int row,
         double lSlope, double rSlope, int x_mirror, int y_mirror, bool xy_mirror) {
         bool still_blocking = false;
         int start, end, col, cur = 0;
@@ -88,14 +88,14 @@ public class Visionchecker : MonoBehaviour
                 FOV[cur] = true;
 
                 //장애물과 만나면 장애물의 왼쪽 지역을 스캔하는 새로운 scanOctant를 재귀실행한다, 장애물의 오른쪽은 원래 실행되던 scanOctant가 계속한다
-                if(blockings[cur]){
+                if(GameManager.cur_level.vision_blockings[cur]){
                     if(!still_blocking){
                         still_blocking = true;
                         
                         //장애물의 왼쪽을 스캔하기 때문에 가장 왼쪽 칸을 스캔 중이었다면 의미없다
                         if (col != start){
                             //장애물의 왼쪽을 스캔할려면 장애물의 4개 꼭지점 중에 플레이어에게서 row는 멀고 col은 가까운 쪽을 새로운 경계선으로 봐야 한다, 따라서 rSlope 계산에 row는 +1을 한다
-                            scanOctant(FOV, blockings, distance, x, y, row+1, lSlope, (double)col/(double)(row+1), x_mirror, y_mirror, xy_mirror);
+                            scanOctant(FOV, distance, x, y, row+1, lSlope, (double)col/(double)(row+1), x_mirror, y_mirror, xy_mirror);
                         }
                     }
                 }else{
