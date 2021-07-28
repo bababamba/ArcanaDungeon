@@ -19,7 +19,20 @@ public class Enemy : Thing
             cur_pos = (int)Mathf.Round(GetComponent<Rigidbody2D>().position.y + 1);
             cur_pos *= -GameManager.cur_level.levelr.Width();
             cur_pos += (int)Mathf.Round(GetComponent<Rigidbody2D>().position.x + 1);
-            Vision_research();
+            turn();
+        }
+    }
+
+    public void turn() {
+        Vision_research();
+
+        if (GameManager.distance_cal(GameManager.Plr, this) <= 1 & Plr_pos[0] != -1) {
+            Debug.Log("몬스터가 당신을 공격하려고 합니다. 근데 아직 구현이 안 돼서 못 하네요. 저런!");
+        }else if (route_pos.Count > 0)
+        {
+            Debug.Log("몬스터 위치 / 경로의 0번 : "+cur_pos+" / "+route_pos[0]);
+            GetComponent<Rigidbody2D>().position = new Vector2(GetComponent<Rigidbody2D>().position.x + route_pos[0] % GameManager.cur_level.width - cur_pos % GameManager.cur_level.width , GetComponent<Rigidbody2D>().position.y - route_pos[0] / GameManager.cur_level.width + cur_pos / GameManager.cur_level.width );
+            route_pos.RemoveAt(0);
         }
     }
 
@@ -41,7 +54,7 @@ public class Enemy : Thing
 
         if (Plr_pos[0] != -1)
         {
-            route_BPS();
+            route_BPS(Plr_pos[0], FOV);
         }
 
         //★몬스터의 시야 범위를 파랑색으로, 몬스터의 cur_pos는 녹색으로 나타낸다, 당연히 몬스터의 시야 범위를 보여줄 필요가 없으므로 나중에 삭제할 것
@@ -57,42 +70,5 @@ public class Enemy : Thing
         foreach (int ii in route_pos) {
             GameManager.cur_level.temp_gameobjects[ii].GetComponent<SpriteRenderer>().color = new Color(1, 0.2f, 0.2f);
         }
-    }
-
-    private void route_BPS() {
-        List<int> checking = new List<int>();
-        int[] prev = new int[GameManager.cur_level.length];
-        int[] dir = new int[] { -1, 1, GameManager.cur_level.width, -GameManager.cur_level.width};
-
-        checking.Add(cur_pos);
-        int FOV_true = 0;
-        foreach (bool b in FOV) {
-            if (b) { FOV_true++; }
-        }
-        for (int i = 0; i<FOV_true; i++) {
-            //동서남북 포함 시 확인해야 하는 것 : passable인가?, level의 length 범위 이내의 숫자인가, prev[i]==null인가, 몬스터의 cur_pos가 아닌가
-            for (int ii = 0; ii < 4; ii++) {
-                 int temp2 = checking[i] + dir[ii];
-                if ((GameManager.cur_level.map[temp2] & Terrain.passable) != 0 & prev[temp2] == 0 & temp2 != cur_pos & temp2 > 0 & temp2 < GameManager.cur_level.length) {
-                    checking.Add(temp2);
-                    prev[temp2] = checking[i];
-                }
-            }
-
-            //Plr_pos[0]이랑 같은 좌표인지 확인, 맞으면 prev 배열 쭉 타고올라가면서 route_pos에 저장
-            if (checking[i] == Plr_pos[0])
-            {
-                int temp = checking[i];
-                route_pos.Clear();
-                while (prev[temp] != 0)
-                {
-                    route_pos.Add(temp);//Insert(0, temp);
-                    temp = prev[temp];
-                }
-                break;
-            }
-        }
-
-        return;
     }
 }

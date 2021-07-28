@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Terrain = noname.Terrain;
 
 public class Thing : MonoBehaviour
 {
@@ -62,13 +63,49 @@ public class Thing : MonoBehaviour
     }
 
     //이동 관련 함수
-    public void move() { } 
-    private void pre_move() { 
-        //★move()는 객체마다 달라지지만 pre_move는 달라지지 않으므로 여기서 코딩돼야 한다
-        //1.이동해서 도착할 좌표를 가져온다
-        //2.이 객체가 목적지에 가기 위해 거쳐야 할 경로를 BPS 알고리즘으로 탐색한다
-        //3.그 경로의 좌표들을 배열로 만들어 route_pos에 저장한다
-        //4.move()는 route_pos의 0번 인덱스 좌표로 이동만 하게 한다
+    public void move() { }
+
+    public void route_BPS(int destination, bool[] fov)    //넓이 우선 탐색으로 목적지까지의 경로를 route_pos에 저장해주는 함수
+    {
+        List<int> result = new List<int>();
+        List<int> checking = new List<int>();
+        int[] prev = new int[GameManager.cur_level.length];
+        int[] dir = new int[] { -1, -1 + GameManager.cur_level.width, GameManager.cur_level.width, 1 + GameManager.cur_level.width, 1, 1 - GameManager.cur_level.width, -GameManager.cur_level.width, -1 - GameManager.cur_level.width };
+
+        checking.Add(cur_pos);
+        int FOV_true = 0;
+        foreach (bool b in fov)
+        {
+            if (b) { FOV_true++; }
+        }
+        for (int i = 0; i < FOV_true; i++)
+        {
+            //주변 좌표 포함 시 확인해야 하는 것 : passable인가?, level의 length 범위 이내의 숫자인가, prev[i]==null인가, 몬스터의 cur_pos가 아닌가
+            for (int ii = 0; ii < 8; ii++)
+            {
+                int temp2 = checking[i] + dir[ii];
+                if ((GameManager.cur_level.map[temp2] & Terrain.passable) != 0 & prev[temp2] == 0 & temp2 != cur_pos & temp2 > 0 & temp2 < GameManager.cur_level.length)
+                {
+                    checking.Add(temp2);
+                    prev[temp2] = checking[i];
+                }
+            }
+
+            //Plr_pos[0]이랑 같은 좌표인지 확인, 맞으면 prev 배열 쭉 타고올라가면서 route_pos에 저장
+            if (checking[i] == destination)
+            {
+                int temp = checking[i];
+                route_pos.Clear();
+                while (prev[temp] != 0)
+                {
+                    route_pos.Insert(0,temp);
+                    temp = prev[temp];
+                }
+                break;
+            }
+        }
+        
+        return;
     }
 
     //상태이상 처리 관련 함수
