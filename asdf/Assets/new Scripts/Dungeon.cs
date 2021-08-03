@@ -7,9 +7,14 @@ namespace noname
 {
     public class Dungeon : MonoBehaviour
     {
+
+        public const int burnt = 0x01;
+        public const int stun = 0x02;
+
         public GameObject wallTile, floorTile, upStairsTile, downStairsTile;
         public GameObject doorTile;
         public GameObject Player;
+        public player Plr;
         public List<Level> levels = new List<Level>();
         public Level currentlevel;
         public bool changed = false;
@@ -23,10 +28,8 @@ namespace noname
             
             Player = Instantiate(Player, new Vector2(0, 0), Quaternion.identity)as GameObject;
             Visionchecker.temp_dungeon = this;//★visionchecker에서 현재 level을 원활하게 가져오기 위해 넣었다, 나중에 더 나은 방법을 발견하면 그걸 사용하자
-            GameManager.Plr = Player.GetComponent<player>();
-            GameManager.Plr_object = Player;
-            GameManager.cur_level = currentlevel;
-            GameManager.Plr_object.GetComponent<player>().Spawn();
+            Plr = Player.GetComponent<player>();
+            Plr.Spawn(this);
             //★Player.transform.position = GameManager.Plr.PlayerPos;
             
         }
@@ -48,9 +51,8 @@ namespace noname
             currentlevel = l;
             PrintLevel();
 
-            GameManager.cur_level = currentlevel;
-            GameManager.Plr.Spawn();
-            Player.transform.position = GameManager.Plr.PlayerPos;
+            Plr.Spawn(this);
+            Player.transform.position = Plr.PlayerPos;
         }//여기 판 갈아주세요 (판 치우고 새로 깔아야 한다.)
         public void PrintLevel()
         {
@@ -95,11 +97,23 @@ namespace noname
 
         private void Update()
         {
-            if (GameManager.cur_level.map[(int)GameManager.Plr.transform.position.x, (int)GameManager.Plr.transform.position.y] == Terrain.STAIRS_DOWN && changed == false)
+            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_DOWN && changed == false)
             {
-                Nextlevel();
+                //Nextlevel();
                 changed = true;
             }
         }
+
+        public static int distance_cal(Thing a, Thing b)
+        {
+            //물체의 x좌표값 차이와 y좌표값 차이를 구해서 절댓값을 씌운다.
+            int x_gap = Math.Abs((int)(a.transform.position.x - b.transform.position.x));
+            int y_gap = Math.Abs((int)(a.transform.position.x - b.transform.position.y));
+
+            //둘을 비교해 더 큰 값을 반환한다, 대각선으로 이동하는 게임 특성 상 그냥 더 큰 쪽이 거리가 된다
+            return (x_gap > y_gap ? x_gap : y_gap);
+        }
+
+
     }
 }

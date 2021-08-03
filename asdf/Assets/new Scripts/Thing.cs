@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using noname;
 using Terrain = noname.Terrain;
 
 public class Thing : MonoBehaviour
@@ -11,10 +12,10 @@ public class Thing : MonoBehaviour
     private int vision_distance;
     //public int[] cur_pos;    //이 물체의 현재 위치, Level 클래스의 map[]을 좌표처럼 사용한다     ★수정해야 한다, 이제 모든 좌표는 unity의 transform 좌표로 사용할 것이다, 다 바꿔야 한다 쥐엔장
     public List<int> route_pos = new List<int>();  //목적지까지의 이동 경로, 이동은 항상 route_pos[0]으로 이동해서 진행된다
-
+    public Dungeon d;
     private string[] text;  //물체의 이름과 설명
 
-    private int condition;  //물체가 보유한 상태이상 및 버프를 나타냄, 각각의 효과들은 GameManager에 상수로 보관되어 있음
+    private int condition;  //물체가 보유한 상태이상 및 버프를 나타냄, 각각의 효과들은 d에 상수로 보관되어 있음
 
     public Thing() {
         condition = 0;
@@ -68,15 +69,15 @@ public class Thing : MonoBehaviour
     public void route_BFS(int dest_x, int dest_y, bool[,] fov)    //넓이 우선 탐색으로 목적지까지의 경로를 route_pos에 저장해주는 함수
     {
         //route_BFS에서의 좌표는 x+y*(맵 너비)로 나타낸다. BFS 알고리즘을 최대한 간략하게 구현하기 위해 부득이하게 좌표를 int 변수 1개로 나타낸 것이다
-        int destination = dest_x + dest_y * GameManager.cur_level.width;
+        int destination = dest_x + dest_y * d.currentlevel.width;
         List<int> checking = new List<int>();
-        int[] prev = new int[GameManager.cur_level.length];
-        int[] dir = new int[] { -1, -1+GameManager.cur_level.width, GameManager.cur_level.width, 1+ GameManager.cur_level.width, 1, 1- GameManager.cur_level.width, -GameManager.cur_level.width, -1- GameManager.cur_level.width };
+        int[] prev = new int[d.currentlevel.length];
+        int[] dir = new int[] { -1, -1+d.currentlevel.width, d.currentlevel.width, 1+ d.currentlevel.width, 1, 1- d.currentlevel.width, -d.currentlevel.width, -1- d.currentlevel.width };
 
         
         int FOV_true = 0; foreach (bool b in fov){ if (b) { FOV_true++; } }
 
-        checking.Add((int)(transform.position.x+transform.position.y*GameManager.cur_level.width));
+        checking.Add((int)(transform.position.x+transform.position.y*d.currentlevel.width));
         int temp, temp2;
         for (int i = 0; i < FOV_true-1; i++)
         {
@@ -84,7 +85,7 @@ public class Thing : MonoBehaviour
             for (int ii = 0; ii < 8; ii++)
             {
                 temp = checking[i] + dir[ii];
-                if ((transform.position.x + transform.position.y * GameManager.cur_level.width != temp) & ((GameManager.cur_level.map[temp % GameManager.cur_level.width, temp / GameManager.cur_level.width] & Terrain.passable) != 0) & (temp > 0 & temp < GameManager.cur_level.length) & (prev[temp] == 0))
+                if ((transform.position.x + transform.position.y * d.currentlevel.width != temp) & ((d.currentlevel.map[temp % d.currentlevel.width, temp / d.currentlevel.width] & Terrain.passable) != 0) & (temp > 0 & temp < d.currentlevel.length) & (prev[temp] == 0))
                 {
                     checking.Add(temp);
                     prev[temp] = checking[i];
@@ -110,10 +111,10 @@ public class Thing : MonoBehaviour
 
     //상태이상 처리 관련 함수
     public void condition_process() {
-        if ((this.condition & GameManager.burnt) != 0) {
+        if ((this.condition & Dungeon.burnt) != 0) {
             burnt_process();
         }
-        if ((this.condition & GameManager.stun) != 0) {
+        if ((this.condition & Dungeon.stun) != 0) {
             stun_process();
         }
     }

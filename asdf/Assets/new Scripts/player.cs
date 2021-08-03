@@ -36,7 +36,6 @@ public class player : Thing
     int dir = 0;
 
     public bool[,] FOV;
-
     // Start is called before the first frame update
     private void Awake()
     {
@@ -82,7 +81,7 @@ public class player : Thing
                 
                 PlayerPos = new Vector2(Mathf.Round(transform.position.x - 1), Mathf.Round(transform.position.y));
                 //Debug.Log(PlayerPos);
-                if ((GameManager.cur_level.map[(int)Mathf.Round(transform.position.x-1), (int)Mathf.Round(transform.position.y)] & Terrain.passable) != 0)
+                if ((Terrain.thing_tag[d.currentlevel.map[(int)Mathf.Round(transform.position.x-1), (int)Mathf.Round(transform.position.y)]] & Terrain.passable) != 0)
                 {
 
                     anim.SetBool("iswalking", true);
@@ -98,7 +97,7 @@ public class player : Thing
 
 
                 PlayerPos = new Vector2(Mathf.Round(transform.position.x + 1), Mathf.Round(transform.position.y));
-                if ((GameManager.cur_level.map[(int)Mathf.Round(transform.position.x + 1), (int)Mathf.Round(transform.position.y)] & Terrain.passable) != 0)
+                if ((Terrain.thing_tag[d.currentlevel.map[(int)Mathf.Round(transform.position.x + 1), (int)Mathf.Round(transform.position.y)]] & Terrain.passable) != 0)
                 {
 
                     anim.SetBool("iswalking", true);
@@ -115,7 +114,7 @@ public class player : Thing
 
 
                 PlayerPos = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y + 1));
-                if ((GameManager.cur_level.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y + 1)] & Terrain.passable) != 0)
+                if ((Terrain.thing_tag[d.currentlevel.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y + 1)]] & Terrain.passable) != 0)
                 {
 
                     anim.SetBool("iswalking", true);
@@ -132,7 +131,8 @@ public class player : Thing
 
 
                 PlayerPos = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y - 1));
-                if ((GameManager.cur_level.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y - 1)] & Terrain.passable) != 0)
+                Debug.Log(d.currentlevel.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y - 1)] + " , " + Terrain.passable);
+                if ((Terrain.thing_tag[d.currentlevel.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y - 1)]] & Terrain.passable) != 0)
                 {
 
                     anim.SetBool("iswalking", true);
@@ -140,6 +140,7 @@ public class player : Thing
 
                     dir = 4;
                 }
+               
 
             }
         }
@@ -157,7 +158,7 @@ public class player : Thing
                     anim.SetBool("iswalking", false);
                     transform.position = PlayerPos;
                     vision_marker();//★나중에 플레이어의 Turn() 함수가 완성되면 그쪽에서 1번만 실행되게 옮길 것, 아래의 같은 함수들도 동일
-                    Debug.Log("2");
+                    //Debug.Log("2");
                 }
                 break;
             case 2:
@@ -199,12 +200,13 @@ public class player : Thing
         
 
     }
-    public void Spawn()
+    public void Spawn(Dungeon dun)
     {
-        for(int i = 0; i < GameManager.cur_level.width; i++){
-            for (int j = 0; j < GameManager.cur_level.height; j++)
+        this.d = dun;
+        for(int i = 0; i < d.currentlevel.width; i++){
+            for (int j = 0; j < d.currentlevel.height; j++)
             {
-                if (GameManager.cur_level.map[i, j] == Terrain.STAIRS_UP)
+                if (d.currentlevel.map[i, j] == Terrain.STAIRS_UP)
                 {
                     transform.position = new Vector2(i, j);
                     vision_marker();
@@ -218,22 +220,22 @@ public class player : Thing
     }//맵에 입장 시, 계단 자리에 스폰
     //★visionchecker을 먼저 실행해 시야에 보이는 부분을 표시하고, Level에 있는 몬스터 배열을 가져와서 좌표를 비교해 몬스터의 위치도 표시하는 함수
     private void vision_marker() {
-        FOV = new bool[GameManager.cur_level.width, GameManager.cur_level.height];
+        FOV = new bool[d.currentlevel.width, d.currentlevel.height];
         Visionchecker.vision_check((int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y), 6, FOV);
 
 
         //★나중에 단순히 그림자를 씌우고 벗기는 것 이외에 몬스터의 모습을 지우고 다시 나타나게 하는 것까지 넣어줘야 한다, 아니면 그건 몬스터의 vision_searcher에 넣던가
         //프리팹의 RGB값은 0~1 범위로 나타내는 게 기본값같다
-        for (int i=0; i< GameManager.cur_level.width; i++){
-            for (int j = 0; j < GameManager.cur_level.height; j++)
+        for (int i=0; i< d.currentlevel.width; i++){
+            for (int j = 0; j < d.currentlevel.height; j++)
             {
                 if (FOV[i,j])
                 {
-                    GameManager.cur_level.temp_gameobjects[i,j].GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+                    d.currentlevel.temp_gameobjects[i,j].GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
                 }
                 else
                 {
-                    GameManager.cur_level.temp_gameobjects[i,j].GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
+                    d.currentlevel.temp_gameobjects[i,j].GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1);
                 }
             }
         } 

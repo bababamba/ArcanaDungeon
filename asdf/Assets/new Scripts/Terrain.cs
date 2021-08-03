@@ -12,8 +12,8 @@ namespace noname
 		public const int DOOR_LOCKED = 5;
 		public const int DOOR_HIDDEN = 6;
 
-		public const int STAIRS_UP = 7;
-		public const int STAIRS_DOWN = 8;
+		public const int STAIRS_UP = 8;
+		public const int STAIRS_DOWN = 7;
 
 
 		public const int passable = 0x01;	//지나갈 수 있는가
@@ -31,8 +31,8 @@ namespace noname
 			thing_tag[DOOR_LOCKED] = vision_blocking;
 			thing_tag[DOOR_HIDDEN] = thing_tag[WALL];
 
-			thing_tag[STAIRS_DOWN] = passable;
 			thing_tag[STAIRS_UP] = passable;
+			thing_tag[STAIRS_DOWN] = passable;
 		}
 
 		public int discover(int terr)

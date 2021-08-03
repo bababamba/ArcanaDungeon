@@ -8,7 +8,7 @@ using noname;
 
 public class Visionchecker : MonoBehaviour
 {
-    public static Dungeon temp_dungeon; //★나중에 GameManager와 Dungeon, Level 등을 정리해서 좀 더 체계적으로 정리해야 한다
+    public static Dungeon temp_dungeon; //★나중에 temp_dungeon와 Dungeon, Level 등을 정리해서 좀 더 체계적으로 정리해야 한다
 
     public static int[][] rounding;
 
@@ -71,17 +71,17 @@ public class Visionchecker : MonoBehaviour
             }
 
             //먼저 플레이어 좌표를 넣고 거기에서 스캔이 완료된 row를 건너뛰어서 이번 스캔을 시작할 지점을 찾는다
-            //cur = y*GameManager.cur_level.width+x
+            //cur = y*temp_dungeon.currentlevel.width+x
             cur_x = x;
             cur_y = y;
 
             //xy_mirror == true라면 y=x 혹은 y=-x에 대해 대칭시킨 것이다
             if(xy_mirror){
-                //cur += x_mirror * row + y_mirror * start * GameManager.cur_level.width;
+                //cur += x_mirror * row + y_mirror * start * temp_dungeon.currentlevel.width;
                 cur_x += x_mirror * row;
                 cur_y += y_mirror * start;
             }else{
-                //cur += x_mirror * start + y_mirror * row * GameManager.cur_level.width;
+                //cur += x_mirror * start + y_mirror * row * temp_dungeon.currentlevel.width;
                 cur_x += x_mirror * start;
                 cur_y += y_mirror * row;
             }
@@ -91,7 +91,7 @@ public class Visionchecker : MonoBehaviour
                 FOV[cur_x, cur_y] = true;
 
                 //장애물과 만나면 장애물의 왼쪽 지역을 스캔하는 새로운 scanOctant를 재귀실행한다, 장애물의 오른쪽은 원래 실행되던 scanOctant가 계속한다
-                if(GameManager.cur_level.vision_blockings[cur_x, cur_y]){
+                if(temp_dungeon.currentlevel.vision_blockings[cur_x, cur_y]){
                     if(!still_blocking){
                         still_blocking = true;
                         
