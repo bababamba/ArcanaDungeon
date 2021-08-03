@@ -26,8 +26,8 @@ namespace noname
             GameManager.Plr = Player.GetComponent<player>();
             GameManager.Plr_object = Player;
             GameManager.cur_level = currentlevel;
-            GameManager.Plr.Spawn();
-            Player.transform.position = GameManager.Plr.PlayerPos;
+            GameManager.Plr_object.GetComponent<player>().Spawn();
+            //★Player.transform.position = GameManager.Plr.PlayerPos;
             
         }
         public void Nextlevel()
@@ -54,13 +54,10 @@ namespace noname
         }//여기 판 갈아주세요 (판 치우고 새로 깔아야 한다.)
         public void PrintLevel()
         {
-            int pos = 0;
-            for (int i = 0; i < currentlevel.height; i++, pos += currentlevel.width)
-            {
-                for (int j = pos; j < pos + currentlevel.width; j++)
-                {
+            for (int i = 0; i < currentlevel.width; i++){
+                for (int j = 0; j < currentlevel.height; j++){
                     GameObject tileObject;
-                    int tile = currentlevel.map[j];
+                    int tile = currentlevel.map[i,j];
                     switch (tile)
                     {
                         case Terrain.EMPTY:
@@ -83,11 +80,11 @@ namespace noname
                         default:
                             continue;
                     }
-                    GameObject newTile = Instantiate(tileObject, new Vector2(j - pos - 1, -i - 1), Quaternion.identity) as GameObject;
+                    GameObject newTile = Instantiate(tileObject, new Vector2(i, j), Quaternion.identity) as GameObject;
                     newTile.transform.SetParent(this.transform, false);
                     try
                     {
-                        currentlevel.temp_gameobjects.Add(newTile);//★나중에 그래픽 표현 방법이랑 좌표 체계 정리해야 한다
+                        currentlevel.temp_gameobjects[i,j]=newTile;//★나중에 그래픽 표현 방법이랑 좌표 체계 정리해야 한다
                     }
                     catch (Exception e) {
                         Debug.Log(e);
@@ -98,7 +95,7 @@ namespace noname
 
         private void Update()
         {
-            if (GameManager.Plr.CheckLevel(GameManager.Plr.PlayerPos.x, GameManager.Plr.PlayerPos.y) == Terrain.STAIRS_DOWN && changed == false)
+            if (GameManager.cur_level.map[(int)GameManager.Plr.transform.position.x, (int)GameManager.Plr.transform.position.y] == Terrain.STAIRS_DOWN && changed == false)
             {
                 Nextlevel();
                 changed = true;

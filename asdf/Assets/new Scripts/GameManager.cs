@@ -15,19 +15,11 @@ public class GameManager : MonoBehaviour
 
 
     public static int distance_cal(Thing a, Thing b) {
-        //a의 cur_pos를 cur_level.width로 나눈 몫을 y1, 나눈 나머지를 x1에 저장한다
-        int y1 = a.cur_pos / cur_level.width;
-        int x1 = a.cur_pos % cur_level.width;
-        //b의 cur_pos를 curlevel.width로 나눈 몫을 y2, 나눈 나머지를 x2에 저장한다
-        int y2 = b.cur_pos / cur_level.width;
-        int x2 = b.cur_pos % cur_level.width;
+        //물체의 x좌표값 차이와 y좌표값 차이를 구해서 절댓값을 씌운다.
+        int x_gap = Math.Abs((int)(a.transform.position.x - b.transform.position.x));
+        int y_gap = Math.Abs((int)(a.transform.position.x - b.transform.position.y));
 
-        //y1에서 y2를 뺀 절대값을 y_gap에 저장한다
-        int y_gap = Math.Abs(y1 - y2);
-        //x1에서 x2를 뺀 절대값을 x_gap에 저장한다
-        int x_gap = Math.Abs(x1 - x2);
-
-        //둘을 비교해 더 큰 값을 반환한다
-        return (y_gap > x_gap ? y_gap : x_gap);
+        //둘을 비교해 더 큰 값을 반환한다, 대각선으로 이동하는 게임 특성 상 그냥 더 큰 쪽이 거리가 된다
+        return (x_gap > y_gap ? x_gap : y_gap);
     }
 }

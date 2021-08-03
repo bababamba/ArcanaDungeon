@@ -9,7 +9,7 @@ public class Thing : MonoBehaviour
     private int maxhp;
     private int block;
     private int vision_distance;
-    public int cur_pos;    //이 물체의 현재 위치, Level 클래스의 map[]을 좌표처럼 사용한다
+    //public int[] cur_pos;    //이 물체의 현재 위치, Level 클래스의 map[]을 좌표처럼 사용한다     ★수정해야 한다, 이제 모든 좌표는 unity의 transform 좌표로 사용할 것이다, 다 바꿔야 한다 쥐엔장
     public List<int> route_pos = new List<int>();  //목적지까지의 이동 경로, 이동은 항상 route_pos[0]으로 이동해서 진행된다
 
     private string[] text;  //물체의 이름과 설명
@@ -65,41 +65,41 @@ public class Thing : MonoBehaviour
     //이동 관련 함수
     public void move() { }
 
-    public void route_BPS(int destination, bool[] fov)    //넓이 우선 탐색으로 목적지까지의 경로를 route_pos에 저장해주는 함수
+    public void route_BFS(int dest_x, int dest_y, bool[,] fov)    //넓이 우선 탐색으로 목적지까지의 경로를 route_pos에 저장해주는 함수
     {
-        List<int> result = new List<int>();
+        //route_BFS에서의 좌표는 x+y*(맵 너비)로 나타낸다. BFS 알고리즘을 최대한 간략하게 구현하기 위해 부득이하게 좌표를 int 변수 1개로 나타낸 것이다
+        int destination = dest_x + dest_y * GameManager.cur_level.width;
         List<int> checking = new List<int>();
         int[] prev = new int[GameManager.cur_level.length];
-        int[] dir = new int[] { -1, -1 + GameManager.cur_level.width, GameManager.cur_level.width, 1 + GameManager.cur_level.width, 1, 1 - GameManager.cur_level.width, -GameManager.cur_level.width, -1 - GameManager.cur_level.width };
+        int[] dir = new int[] { -1, -1+GameManager.cur_level.width, GameManager.cur_level.width, 1+ GameManager.cur_level.width, 1, 1- GameManager.cur_level.width, -GameManager.cur_level.width, -1- GameManager.cur_level.width };
 
-        checking.Add(cur_pos);
-        int FOV_true = 0;
-        foreach (bool b in fov)
+        
+        int FOV_true = 0; foreach (bool b in fov){ if (b) { FOV_true++; } }
+
+        checking.Add((int)(transform.position.x+transform.position.y*GameManager.cur_level.width));
+        int temp, temp2;
+        for (int i = 0; i < FOV_true-1; i++)
         {
-            if (b) { FOV_true++; }
-        }
-        for (int i = 0; i < FOV_true; i++)
-        {
-            //주변 좌표 포함 시 확인해야 하는 것 : passable인가?, level의 length 범위 이내의 숫자인가, prev[i]==null인가, 몬스터의 cur_pos가 아닌가
+            //주변 좌표 포함 시 확인해야 하는 것 : 몬스터의 cur_pos가 아닌가, passable인가?, level의 length 범위 이내의 숫자인가, prev[i]==null인가
             for (int ii = 0; ii < 8; ii++)
             {
-                int temp2 = checking[i] + dir[ii];
-                if ((GameManager.cur_level.map[temp2] & Terrain.passable) != 0 & prev[temp2] == 0 & temp2 != cur_pos & temp2 > 0 & temp2 < GameManager.cur_level.length)
+                temp = checking[i] + dir[ii];
+                if ((transform.position.x + transform.position.y * GameManager.cur_level.width != temp) & ((GameManager.cur_level.map[temp % GameManager.cur_level.width, temp / GameManager.cur_level.width] & Terrain.passable) != 0) & (temp > 0 & temp < GameManager.cur_level.length) & (prev[temp] == 0))
                 {
-                    checking.Add(temp2);
-                    prev[temp2] = checking[i];
+                    checking.Add(temp);
+                    prev[temp] = checking[i];
                 }
             }
 
             //Plr_pos[0]이랑 같은 좌표인지 확인, 맞으면 prev 배열 쭉 타고올라가면서 route_pos에 저장
             if (checking[i] == destination)
             {
-                int temp = checking[i];
+                temp2 = checking[i];
                 route_pos.Clear();
-                while (prev[temp] != 0)
+                while (prev[temp2] != 0)
                 {
-                    route_pos.Insert(0,temp);
-                    temp = prev[temp];
+                    route_pos.Insert(0,temp2);
+                    temp2 = prev[temp2];
                 }
                 break;
             }
@@ -125,5 +125,5 @@ public class Thing : MonoBehaviour
     }
 
     public void die() { } //★나중에 자기자신을 map[]에서 삭제하는 정도는 넣어두자
-    private void turn() { } 
+    public void turn() { } 
 }

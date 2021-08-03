@@ -20,9 +20,9 @@ namespace noname
 
     public abstract class Level 
     {
-        public List<GameObject> temp_gameobjects;//★시야를 표현하기 위한 임시 게임오브젝트 배열, 나중에 그래픽 표현이나 좌표 체계를 정리할 필요가 있다
+        public GameObject[,] temp_gameobjects;//★시야를 표현하기 위한 임시 게임오브젝트 배열, 나중에 그래픽 표현이나 좌표 체계를 정리할 필요가 있다
         public int width, height, length;
-        public int[] map;
+        public int[,] map;
 
         public List<Room> rooms;
 
@@ -32,7 +32,7 @@ namespace noname
         public int exitnum;
         public static Random rand = new Random();
 
-        public bool[] vision_blockings;
+        public bool[,] vision_blockings;
         
 
         public void Create()
@@ -64,10 +64,13 @@ namespace noname
 
 
 
-            temp_gameobjects = new List<GameObject>();
-            vision_blockings = new bool[length];
-            for (int i = 0; i < length; i++) {
-                vision_blockings[i] = (Terrain.thing_tag[map[i]] & Terrain.vision_blocking) != 0;
+            temp_gameobjects = new GameObject[width, height];
+            vision_blockings = new bool[width,height];
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++)
+                {
+                    vision_blockings[i,j] = (Terrain.thing_tag[map[i,j]] & Terrain.vision_blocking) != 0;
+                }
             }
 
         }
@@ -99,15 +102,14 @@ namespace noname
             {
                
                 var d = r.connection[n];
-                var door = d.x + d.y * width;
 
                 switch (d.type)
                 {
                     case Room.Door.Type.EMPTY:
-                        map[door] = Terrain.EMPTY;
+                        map[d.x, d.y] = Terrain.EMPTY;
                         break;
                     case Room.Door.Type.REGULAR:
-                        map[door] = Terrain.DOOR;
+                        map[d.x, d.y] = Terrain.DOOR;
                         break;
                 }
             }

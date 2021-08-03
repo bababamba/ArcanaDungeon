@@ -23,9 +23,12 @@ namespace noname
             PlaceRooms();
             levelr = LevelRect();
             MoveRooms();
-            map = new int[length];
-            for (int i = 0; i < length; i++)
-                map[i] = Terrain.WALL;
+            map = new int[width,height];
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    map[i,j] = Terrain.WALL;
+                }
+            }
         }//무한루프 발생시 여기서 조절
         public override void PlaceRooms()
         {

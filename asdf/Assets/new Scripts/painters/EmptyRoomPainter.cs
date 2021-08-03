@@ -8,16 +8,15 @@ namespace noname.painters
     {
         public override void Paint(Level l, Room r)
         {
-            int pos = r.y  * l.width + r.x;
-            for (int i = 0; i < r.Height(); i++, pos += l.width)
+            for (int i = r.x; i < r.x + r.Width(); i++)
             {
-                for (int j = pos; j < pos + r.Width(); j++)
+                for (int j = r.y; j < r.y + r.Height(); j++)
                 {
                     int tile;
                     tile = Terrain.GROUND;
-                    if (i == r.Height() - 1 || j == r.Width() + pos - 1)
+                    if (i == r.x + r.Width() - 1 || j == r.y + r.Height() - 1)
                         tile = Terrain.WALL;
-                    l.map[j] = tile;
+                    l.map[i,j] = tile;
                 }
             }
         }
