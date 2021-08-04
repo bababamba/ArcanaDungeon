@@ -1,8 +1,9 @@
-﻿using ArcanaDungeon.util;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using ArcanaDungeon.rooms;
 using ArcanaDungeon.painters;
+using ArcanaDungeon.Object;
+using ArcanaDungeon.util;
 using UnityEngine;
 using Random = System.Random;
 using Rect = ArcanaDungeon.util.Rect;
