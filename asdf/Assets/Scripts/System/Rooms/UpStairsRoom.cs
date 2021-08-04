@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using noname.util;
-using noname.painters;
+using ArcanaDungeon.util;
+using ArcanaDungeon.painters;
 
-namespace noname.rooms
+namespace ArcanaDungeon.rooms
 {
     public class UpStairsRoom : Room
     {

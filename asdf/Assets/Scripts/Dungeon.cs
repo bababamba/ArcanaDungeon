@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace noname
+namespace ArcanaDungeon
 {
     public class Dungeon : MonoBehaviour
     {
@@ -17,23 +17,34 @@ namespace noname
         public player Plr;
         public List<Level> levels = new List<Level>();
         public Level currentlevel;
-        public bool changed = false;
+        public int changed = 0;
 
-        private void Start() 
+        public static Dungeon dungeon;
+
+        private void Awake() 
         {
+            if (dungeon == null)
+            {
+                dungeon = this;
+                DontDestroyOnLoad(this);
+            }
+            else
+            {
+                if (dungeon != this)
+                    Destroy(this.gameObject);
+            }// 오브젝트 싱글턴화. 시작시 할당되는 자기 자신(씬에 있는 그거)만 유일한 dungeon이다.
             currentlevel = new RegularLevel();
             currentlevel.Create();
             levels.Add(currentlevel);
             PrintLevel();
             
             Player = Instantiate(Player, new Vector2(0, 0), Quaternion.identity)as GameObject;
-            Visionchecker.temp_dungeon = this;//★visionchecker에서 현재 level을 원활하게 가져오기 위해 넣었다, 나중에 더 나은 방법을 발견하면 그걸 사용하자
             Plr = Player.GetComponent<player>();
-            Plr.Spawn(this);
-            //★Player.transform.position = GameManager.Plr.PlayerPos;
+            Plr.Spawn();
+            
             
         }
-        public void Nextlevel()
+        public void NextLevel()
         {
             Level l = new RegularLevel();
             //기존에 깔린 판 치우기(어차피 레벨 자체에 맵 정보는 저장되어 있으니 상관없음)
@@ -45,15 +56,41 @@ namespace noname
                 Destroy(child.gameObject);
             }
 
+            //내려간 계단 자리 확인
+            currentlevel.laststair = new Vector2((int)Plr.transform.position.x, (int)Plr.transform.position.y);
+
             //새로 판 깔기
-            l.Create();
-            levels.Add(l);
-            currentlevel = l;
+            if (levels.IndexOf(currentlevel) == levels.Count - 1)//현재가 마지막층이면, 새 층을 만들어 깐다.
+            {
+                l.Create();
+                levels.Add(l);
+                currentlevel = l;
+            }
+            else//마지막층이 아니면, 이미 있는 다음층을 깐다.
+            {
+                currentlevel = levels[levels.IndexOf(currentlevel) + 1];
+            }
             PrintLevel();
 
-            Plr.Spawn(this);
+            Plr.Spawn();
             Player.transform.position = Plr.PlayerPos;
         }//여기 판 갈아주세요 (판 치우고 새로 깔아야 한다.)
+
+        public void PrevLevel()
+        {
+            Transform[] allChildren = GetComponentsInChildren<Transform>();
+            foreach (Transform child in allChildren)
+            {
+                if (child.name == transform.name)
+                    continue;
+                Destroy(child.gameObject);
+            }
+
+            currentlevel = levels[levels.IndexOf(currentlevel) - 1];
+            PrintLevel();
+            Plr.Spawn(new Vector2(currentlevel.laststair.x + 1, currentlevel.laststair.y));
+            Player.transform.position = Plr.PlayerPos;
+        }//이전 층으로 갈 때는, 내려갈 때 저장된 계단 위치로 이동한다.
         public void PrintLevel()
         {
             for (int i = 0; i < currentlevel.width; i++){
@@ -97,11 +134,13 @@ namespace noname
 
         private void Update()
         {
-            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_DOWN && changed == false)
+            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_DOWN && levels.IndexOf(currentlevel) < 2)
             {
-                //Nextlevel();
-                Debug.Log("이동!");
-                changed = true;
+                NextLevel();
+            }
+            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_UP && levels.IndexOf(currentlevel) > 0)
+            {
+                PrevLevel();
             }
         }
 

@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System;
-using noname.painters;
+using ArcanaDungeon.painters;
 
-namespace noname.rooms
+namespace ArcanaDungeon.rooms
 {
     public abstract class StandardRoom : Room
     {

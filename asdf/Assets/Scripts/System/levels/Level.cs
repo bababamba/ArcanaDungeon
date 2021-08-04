@@ -1,14 +1,14 @@
-﻿using noname.util;
+﻿using ArcanaDungeon.util;
 using System.Collections.Generic;
 using System;
-using noname.rooms;
-using noname.painters;
+using ArcanaDungeon.rooms;
+using ArcanaDungeon.painters;
 using UnityEngine;
 using Random = System.Random;
-using Rect = noname.util.Rect;
+using Rect = ArcanaDungeon.util.Rect;
 using System.Linq;
 
-namespace noname
+namespace ArcanaDungeon
 {
     public enum LevelSize
     {
@@ -33,12 +33,16 @@ namespace noname
         public static Random rand = new Random();
 
         public bool[,] vision_blockings;
-        
+        public Vector2 laststair;
+
+        public List<Enemy> enemies;
+        public int maxEnemies;
 
         public void Create()
         {
             Random random = new Random();
             roomNum = random.Next(0, 6) + (int)levelsize;
+            maxEnemies = (int)levelsize / 2;
             InitRooms();
 
             foreach (Room r1 in rooms)
@@ -56,6 +60,7 @@ namespace noname
             }
 
             PaintRooms();
+            SpawnMobs();
             //foreach (Room r in rooms)
              //   Debug.Log(r.Info());
 
@@ -75,7 +80,7 @@ namespace noname
 
         }
         public abstract void InitRooms();
-        
+        public abstract void SpawnMobs();
         public void PlaceDoors(Room r)
         {
             foreach(Room room in r.connection.Keys.ToList())

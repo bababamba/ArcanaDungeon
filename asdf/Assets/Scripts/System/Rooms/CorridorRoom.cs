@@ -1,9 +1,9 @@
 using System.Collections;
-using noname.util;
+using ArcanaDungeon.util;
 using System.Collections.Generic;
-using noname.painters;
+using ArcanaDungeon.painters;
 
-namespace noname.rooms
+namespace ArcanaDungeon.rooms
 {
     public class CorridorRoom : Room
     {

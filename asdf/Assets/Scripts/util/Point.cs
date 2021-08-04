@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace noname.util
+namespace ArcanaDungeon.util
 {
     public class Point 
     {

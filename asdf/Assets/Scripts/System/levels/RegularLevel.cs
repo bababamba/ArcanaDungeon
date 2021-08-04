@@ -1,14 +1,14 @@
-using noname.util;
+using ArcanaDungeon.util;
 using System.Collections.Generic;
 using System;
-using noname.rooms;
-using noname.painters;
+using ArcanaDungeon.rooms;
+using ArcanaDungeon.painters;
 using UnityEngine;
 using Random = System.Random;
-using Rect = noname.util.Rect;
+using Rect = ArcanaDungeon.util.Rect;
 using System.Linq;
 
-namespace noname
+namespace ArcanaDungeon
 {
     public class RegularLevel : Level
     {
@@ -29,7 +29,8 @@ namespace noname
                     map[i,j] = Terrain.WALL;
                 }
             }
-        }//무한루프 발생시 여기서 조절
+        }
+
         public override void PlaceRooms()
         {
             rooms[0].SetPosition(0, 0);
@@ -167,6 +168,9 @@ namespace noname
 
         }
 
-
+        public override void SpawnMobs()
+        {
+            
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace noname.util
+namespace ArcanaDungeon.util
 {
     public class SizePicker
     {

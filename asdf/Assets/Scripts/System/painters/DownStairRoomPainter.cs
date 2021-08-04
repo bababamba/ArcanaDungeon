@@ -1,9 +1,9 @@
-﻿using noname.rooms;
+﻿using ArcanaDungeon.rooms;
 using System;
 using System.Collections.Generic;
-using noname.util;
+using ArcanaDungeon.util;
 
-namespace noname.painters
+namespace ArcanaDungeon.painters
 {
     public class DownStairRoomPainter : Painter
     {

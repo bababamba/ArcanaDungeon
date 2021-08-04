@@ -1,11 +1,11 @@
-﻿using noname.rooms;
+﻿using ArcanaDungeon.rooms;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = System.Random;
-using noname.util;
+using ArcanaDungeon.util;
 
-namespace noname.painters
+namespace ArcanaDungeon.painters
 {
     public class UpStairRoomPainter : Painter
     {

@@ -1,8 +1,8 @@
-﻿using noname.util;
+﻿using ArcanaDungeon.util;
 using System.Collections.Generic;
 using System;
 
-namespace noname.rooms
+namespace ArcanaDungeon.rooms
 {
     public abstract class Room : Rect
     {
