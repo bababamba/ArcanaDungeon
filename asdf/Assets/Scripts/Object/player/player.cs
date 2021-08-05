@@ -24,6 +24,7 @@ namespace ArcanaDungeon.Object
 
         public float MovePower = 0.2f;
         public int MoveTimerLimit = 5;
+        public bool isPlayerTurn = true;
         public SpriteRenderer spriteRenderer;
         public Animator anim;
         public Rigidbody2D rigid;
@@ -32,6 +33,7 @@ namespace ArcanaDungeon.Object
 
         public Vector2 PlayerPos = new Vector2(0, 0);
         public Vector2 MoveVector = new Vector2(0, 0);
+
 
         int MoveTimer = 0;
         int dir = 0;
@@ -72,79 +74,84 @@ namespace ArcanaDungeon.Object
         }
 
         private void FixedUpdate()
-        {
-            if (MoveTimer == 0)
+        {//입력받는곳
+            if (isPlayerTurn == true)
             {
 
-                //left
-                if (Input.GetAxisRaw("Horizontal") == -1 && !anim.GetBool("iswalking"))
+                if (MoveTimer == 0)
                 {
 
-                    PlayerPos = new Vector2(Mathf.Round(transform.position.x - 1), Mathf.Round(transform.position.y));
-                    //Debug.Log(PlayerPos);
-                    if ((Terrain.thing_tag[Dungeon.dungeon.currentlevel.map[(int)Mathf.Round(transform.position.x - 1), (int)Mathf.Round(transform.position.y)]] & Terrain.passable) != 0)
+                    //left
+                    if (Input.GetAxisRaw("Horizontal") == -1 && !anim.GetBool("iswalking"))
                     {
 
-                        anim.SetBool("iswalking", true);
-                        MoveTimer = MoveTimerLimit;
+                        PlayerPos = new Vector2(Mathf.Round(transform.position.x - 1), Mathf.Round(transform.position.y));
+                        //Debug.Log(PlayerPos);
+                        if ((Terrain.thing_tag[Dungeon.dungeon.currentlevel.map[(int)Mathf.Round(transform.position.x - 1), (int)Mathf.Round(transform.position.y)]] & Terrain.passable) != 0)
+                        {
 
-                        dir = 1;
+                            anim.SetBool("iswalking", true);
+                            MoveTimer = MoveTimerLimit;
+
+                            dir = 1;
+                        }
                     }
-                }
-                //right
-                else if (Input.GetAxisRaw("Horizontal") == 1 && !anim.GetBool("iswalking"))
-                {
-
-
-
-                    PlayerPos = new Vector2(Mathf.Round(transform.position.x + 1), Mathf.Round(transform.position.y));
-                    if ((Terrain.thing_tag[Dungeon.dungeon.currentlevel.map[(int)Mathf.Round(transform.position.x + 1), (int)Mathf.Round(transform.position.y)]] & Terrain.passable) != 0)
+                    //right
+                    else if (Input.GetAxisRaw("Horizontal") == 1 && !anim.GetBool("iswalking"))
                     {
 
-                        anim.SetBool("iswalking", true);
-                        MoveTimer = MoveTimerLimit;
 
-                        dir = 2;
+
+                        PlayerPos = new Vector2(Mathf.Round(transform.position.x + 1), Mathf.Round(transform.position.y));
+                        if ((Terrain.thing_tag[Dungeon.dungeon.currentlevel.map[(int)Mathf.Round(transform.position.x + 1), (int)Mathf.Round(transform.position.y)]] & Terrain.passable) != 0)
+                        {
+
+                            anim.SetBool("iswalking", true);
+                            MoveTimer = MoveTimerLimit;
+
+                            dir = 2;
+                        }
+
                     }
-
-                }
-                //up
-                else if (Input.GetAxisRaw("Vertical") == 1 && !anim.GetBool("iswalking"))
-                {
-
-
-
-                    PlayerPos = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y + 1));
-                    if ((Terrain.thing_tag[Dungeon.dungeon.currentlevel.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y + 1)]] & Terrain.passable) != 0)
+                    //up
+                    else if (Input.GetAxisRaw("Vertical") == 1 && !anim.GetBool("iswalking"))
                     {
 
-                        anim.SetBool("iswalking", true);
-                        MoveTimer = MoveTimerLimit;
 
-                        dir = 3;
+
+                        PlayerPos = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y + 1));
+                        if ((Terrain.thing_tag[Dungeon.dungeon.currentlevel.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y + 1)]] & Terrain.passable) != 0)
+                        {
+
+                            anim.SetBool("iswalking", true);
+                            MoveTimer = MoveTimerLimit;
+
+                            dir = 3;
+                        }
+
                     }
-
-                }
-                //down
-                else if (Input.GetAxisRaw("Vertical") == -1 && !anim.GetBool("iswalking"))
-                {
-
-
-
-                    PlayerPos = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y - 1));
-                    Debug.Log(Dungeon.dungeon.currentlevel.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y - 1)] + " , " + Terrain.passable);
-                    if ((Terrain.thing_tag[Dungeon.dungeon.currentlevel.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y - 1)]] & Terrain.passable) != 0)
+                    //down
+                    else if (Input.GetAxisRaw("Vertical") == -1 && !anim.GetBool("iswalking"))
                     {
 
-                        anim.SetBool("iswalking", true);
-                        MoveTimer = MoveTimerLimit;
 
-                        dir = 4;
+
+                        PlayerPos = new Vector2(Mathf.Round(transform.position.x), Mathf.Round(transform.position.y - 1));
+                        Debug.Log(Dungeon.dungeon.currentlevel.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y - 1)] + " , " + Terrain.passable);
+                        if ((Terrain.thing_tag[Dungeon.dungeon.currentlevel.map[(int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y - 1)]] & Terrain.passable) != 0)
+                        {
+
+                            anim.SetBool("iswalking", true);
+                            MoveTimer = MoveTimerLimit;
+
+                            dir = 4;
+                        }
+
+
                     }
-
-
                 }
             }
+            //입력받는곳 끝
             if (MoveTimer > 0)
                 MoveTimer--;
             //playermove
@@ -159,7 +166,7 @@ namespace ArcanaDungeon.Object
                         anim.SetBool("iswalking", false);
                         transform.position = PlayerPos;
                         vision_marker();//★나중에 플레이어의 Turn() 함수가 완성되면 그쪽에서 1번만 실행되게 옮길 것, 아래의 같은 함수들도 동일
-                                        //Debug.Log("2");
+                        isPlayerTurn = false;            //Debug.Log("2");
                     }
                     break;
                 case 2:
@@ -171,6 +178,7 @@ namespace ArcanaDungeon.Object
                         vision_marker();//★
                         dir = 0;
                         anim.SetBool("iswalking", false);
+                        isPlayerTurn = false;
                     }
                     break;
                 case 3:
@@ -182,6 +190,7 @@ namespace ArcanaDungeon.Object
                         vision_marker();//★
                         dir = 0;
                         anim.SetBool("iswalking", false);
+                        isPlayerTurn = false;
                     }
                     break;
                 case 4:
@@ -193,6 +202,7 @@ namespace ArcanaDungeon.Object
                         vision_marker();//★
                         dir = 0;
                         anim.SetBool("iswalking", false);
+                        isPlayerTurn = false;
                     }
                     break;
                 default:
@@ -228,6 +238,11 @@ namespace ArcanaDungeon.Object
             vision_marker();
         }// 특정 좌표로 소환
          //★visionchecker을 먼저 실행해 시야에 보이는 부분을 표시하고, Level에 있는 몬스터 배열을 가져와서 좌표를 비교해 몬스터의 위치도 표시하는 함수
+        public override void turn()
+        {
+            
+        }
+
         private void vision_marker()
         {
             FOV = new bool[Dungeon.dungeon.currentlevel.width, Dungeon.dungeon.currentlevel.height];

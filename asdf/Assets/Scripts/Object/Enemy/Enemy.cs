@@ -13,15 +13,28 @@ namespace ArcanaDungeon.Object
         bool isawaken;
         int move_speed;
         int action_per_turn;
+        public bool isEnemyturn = false;
 
         int[,] Plr_pos = new int[2, 2];  //0번 인덱스는 실제 플레이어 위치, 1번 인덱스는 마지막으로 본 플레이어 위치
 
         public bool[,] FOV;
         public void Update()
         { //★몬스터 알고리즘 확인용 임시 함수, 나중에 꼭 삭제할 것
-            if (Input.GetKeyDown(KeyCode.R))
+            if (isEnemyturn == true)
             {
-                turn();
+                Vision_research();
+
+                if (Dungeon.distance_cal(Dungeon.dungeon.Plr, this) <= 1 & Plr_pos[0, 0] != -1)
+                {
+                    Debug.Log("몬스터가 당신을 공격하려고 합니다. 근데 아직 구현이 안 돼서 못 하네요. 저런!");
+                }
+                else if (route_pos.Count > 0)
+                {
+                    transform.position = new Vector2(route_pos[0] % Dungeon.dungeon.currentlevel.width, route_pos[0] / Dungeon.dungeon.currentlevel.width);
+                    route_pos.RemoveAt(0);
+                }
+                this.isEnemyturn = false;
+                Debug.Log(this.isEnemyturn);
             }
         }
 
@@ -35,19 +48,10 @@ namespace ArcanaDungeon.Object
             Vision_research();
         }
 
-        public void turn()
+        public override void turn()
         {
-            Vision_research();
-
-            if (Dungeon.distance_cal(Dungeon.dungeon.Plr, this) <= 1 & Plr_pos[0, 0] != -1)
-            {
-                Debug.Log("몬스터가 당신을 공격하려고 합니다. 근데 아직 구현이 안 돼서 못 하네요. 저런!");
-            }
-            else if (route_pos.Count > 0)
-            {
-                transform.position = new Vector2(route_pos[0] % Dungeon.dungeon.currentlevel.width, route_pos[0] / Dungeon.dungeon.currentlevel.width);
-                route_pos.RemoveAt(0);
-            }
+            isEnemyturn = true;
+            Debug.Log("monster");
         }
 
         private void Vision_research()

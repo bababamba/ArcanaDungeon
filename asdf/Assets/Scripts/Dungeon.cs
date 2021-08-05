@@ -14,12 +14,13 @@ namespace ArcanaDungeon
 
         public GameObject wallTile, floorTile, upStairsTile, downStairsTile;
         public GameObject doorTile;
-        public GameObject Player;
+        public GameObject Player, Enemy1;
         public player Plr;
+        public Enemy Ene;
         public List<Level> levels = new List<Level>();
         public Level currentlevel;
         public int changed = 0;
-
+        public int whosTurn = 0;//1 = 플레이어 2 = 몬스터
         public static Dungeon dungeon;
 
         private void Awake() 
@@ -42,7 +43,14 @@ namespace ArcanaDungeon
             Player = Instantiate(Player, new Vector2(0, 0), Quaternion.identity)as GameObject;
             Plr = Player.GetComponent<player>();
             Plr.Spawn();
-            
+
+            //턴 테스트용 쥐 한마리
+            Enemy1= Instantiate(Enemy1, new Vector2(Plr.PlayerPos.x, Plr.PlayerPos.y+1), Quaternion.identity) as GameObject;
+            Ene = Enemy1.GetComponent<Enemy>();
+            Ene.Spawn();
+
+
+            whosTurn = 1;//플레이어 턴
             
         }
         public void NextLevel()
@@ -135,6 +143,7 @@ namespace ArcanaDungeon
 
         private void Update()
         {
+
             if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_DOWN && levels.IndexOf(currentlevel) < 2)
             {
                 NextLevel();
@@ -143,6 +152,20 @@ namespace ArcanaDungeon
             {
                 PrevLevel();
             }
+            //턴
+            if ( Plr.isPlayerTurn == false)
+            {
+                Debug.Log("몬스터 턴!");
+                Ene.turn();
+                Plr.isPlayerTurn = true;
+
+            }
+            //if (Ene.isEnemyturn == false)
+                
+
+
+
+
         }
 
         public static int distance_cal(Thing a, Thing b)
@@ -155,6 +178,7 @@ namespace ArcanaDungeon
             return (x_gap > y_gap ? x_gap : y_gap);
         }
 
+       
 
     }
 }

@@ -145,6 +145,6 @@ namespace ArcanaDungeon.Object
         }
 
         public void die() { } //★나중에 자기자신을 map[]에서 삭제하는 정도는 넣어두자
-        public void turn() { }
+        public abstract void turn();
     }
 }
