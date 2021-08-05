@@ -25,7 +25,7 @@ namespace ArcanaDungeon.cards
 
         public override void UseCard(Enemy enemy)
         {
-            enemy.hpdown(CardDamege);
+            enemy.HpChange(-CardDamege);
         }
     }
 }

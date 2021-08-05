@@ -26,54 +26,54 @@ namespace ArcanaDungeon.Object
         public abstract void Spawn();
 
         //hp 관련 함수
-        public int gethp()
+        public int GetHp()
         {
             return hp;
         }
 
-        public void hpdown(int val)
+        public void HpChange(int val)
         {
-            this.hp -= val;
-            if (this.hp < 0)
+            if (val > 0)
             {
-                this.die();
+                if (this.hp + val > this.maxhp)
+                {
+                    this.hp = this.maxhp;
+                }
+                else
+                {
+                    this.hp += val;
+                }
             }
-        }
-
-        public void hpup(int val)
-        {
-            if (this.hp + val > this.maxhp)
-            {
-                this.hp = this.maxhp;
-            }
-            else
-            {
-                this.hp += val;
-            }
+            else {
+                this.hp -= val;
+                if (this.hp < 0)
+                {
+                    this.die();
+                }
+            }            
         }
 
         //block 관련 함수
-        public int getblock()
-        {
+        public int GetBlock() {
             return this.block;
         }
 
-        public void blockup(int val)
+        public void BlockChange(int val)
         {
-            this.block += val;
-        }
-
-        public void blockdown(int val)
-        {
-            //방어도가 완전히 닳으면 자동으로 체력을 낮추도록 해둔다
-            if (this.block >= val)
+            if (val > 0)
             {
-                this.block -= val;
+                this.block += val;
             }
-            else
-            {
-                hpdown(val - this.block);
+            else {
+                if (this.block - val < 0)
+                {
+                    this.block = 0;
+                }
+                else { 
+                    this.block -= val;
+                }
             }
+            
         }
 
         //이동 관련 함수
@@ -137,7 +137,7 @@ namespace ArcanaDungeon.Object
         }
         private void burnt_process()
         {
-            hpdown(this.maxhp / 10);
+            HpChange(-this.maxhp / 10);
         }
         private void stun_process()
         {

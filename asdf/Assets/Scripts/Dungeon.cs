@@ -168,11 +168,11 @@ namespace ArcanaDungeon
 
         }
 
-        public static int distance_cal(Thing a, Thing b)
+        public static int distance_cal(Transform a, Transform b)
         {
             //물체의 x좌표값 차이와 y좌표값 차이를 구해서 절댓값을 씌운다.
-            int x_gap = Math.Abs((int)(a.transform.position.x - b.transform.position.x));
-            int y_gap = Math.Abs((int)(a.transform.position.x - b.transform.position.y));
+            int x_gap = Math.Abs((int)(a.position.x - b.position.x));
+            int y_gap = Math.Abs((int)(a.position.y - b.position.y));
 
             //둘을 비교해 더 큰 값을 반환한다, 대각선으로 이동하는 게임 특성 상 그냥 더 큰 쪽이 거리가 된다
             return (x_gap > y_gap ? x_gap : y_gap);

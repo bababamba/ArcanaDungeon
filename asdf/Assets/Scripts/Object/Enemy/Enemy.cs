@@ -24,7 +24,7 @@ namespace ArcanaDungeon.Object
             {
                 Vision_research();
 
-                if (Dungeon.distance_cal(Dungeon.dungeon.Plr, this) <= 1 & Plr_pos[0, 0] != -1)
+                if (Dungeon.distance_cal(Dungeon.dungeon.Plr.transform, this.transform) <= 1 & Plr_pos[0, 0] != -1)
                 {
                     Debug.Log("몬스터가 당신을 공격하려고 합니다. 근데 아직 구현이 안 돼서 못 하네요. 저런!");
                 }
@@ -34,7 +34,6 @@ namespace ArcanaDungeon.Object
                     route_pos.RemoveAt(0);
                 }
                 this.isEnemyturn = false;
-                Debug.Log(this.isEnemyturn);
             }
         }
 
@@ -51,7 +50,6 @@ namespace ArcanaDungeon.Object
         public override void turn()
         {
             isEnemyturn = true;
-            Debug.Log("monster");
         }
 
         private void Vision_research()
