@@ -9,7 +9,7 @@ namespace ArcanaDungeon.Object
     public abstract class Thing : MonoBehaviour
     {
         private int hp;
-        private int maxhp;
+        private int maxhp = 300; // 최대 체력 임의로 설정했어요.jgh.
         private int block;
         private int vision_distance;
         //public int[] cur_pos;    //이 물체의 현재 위치, Level 클래스의 map[]을 좌표처럼 사용한다     ★수정해야 한다, 이제 모든 좌표는 unity의 transform 좌표로 사용할 것이다, 다 바꿔야 한다 쥐엔장
@@ -45,7 +45,7 @@ namespace ArcanaDungeon.Object
                 }
             }
             else {
-                this.hp -= val;
+                this.hp += val;
                 if (this.hp < 0)
                 {
                     this.die();

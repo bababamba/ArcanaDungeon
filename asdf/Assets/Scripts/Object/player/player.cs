@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ArcanaDungeon;
+using ArcanaDungeon.cards;
 using ArcanaDungeon.rooms;
 using Terrain = ArcanaDungeon.Terrain;
 
@@ -16,6 +17,7 @@ namespace ArcanaDungeon.Object
         Card[] discarded;
         Card[] hand;
          */
+        AttackCard atcd = new AttackCard();
 
         public player me = null;
         private bool isturn;    //플레이어턴 동안 true;
@@ -75,9 +77,16 @@ namespace ArcanaDungeon.Object
 
         private void FixedUpdate()
         {//입력받는곳
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                Debug.Log("Q눌렸으");
+
+                atcd.UseCard(Dungeon.dungeon.Ene);
+                Debug.Log("플레이어측 체력" + Dungeon.dungeon.Ene.GetHp());
+            }// 임시 키 입력 
             if (isPlayerTurn == true)
             {
-
+                
                 if (MoveTimer == 0)
                 {
 
@@ -150,7 +159,10 @@ namespace ArcanaDungeon.Object
 
                     }
                 }
+                
             }
+
+
             //입력받는곳 끝
             if (MoveTimer > 0)
                 MoveTimer--;
