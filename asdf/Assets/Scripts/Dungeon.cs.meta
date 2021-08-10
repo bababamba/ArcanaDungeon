@@ -15,6 +15,10 @@ MonoImporter:
       type: 3}
   - Player: {fileID: 1096753644826888910, guid: d24fefa828860e043963df71865a9d52,
       type: 3}
+  - Enemy1: {fileID: 4620959192706698618, guid: 8426f94e9cd918645a3b686d561a5b99,
+      type: 3}
+  - Plr: {instanceID: 0}
+  - Ene: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -19,6 +19,13 @@ namespace ArcanaDungeon
         //SMALL(4~8), NORMAL(10~14), LARGE(16~20)
     }
 
+    public enum Biome
+    {
+        NORMAL = 0,
+        FIRE = 1
+    }
+
+
     public abstract class Level 
     {
         public GameObject[,] temp_gameobjects;//★시야를 표현하기 위한 임시 게임오브젝트 배열, 나중에 그래픽 표현이나 좌표 체계를 정리할 필요가 있다
@@ -28,6 +35,9 @@ namespace ArcanaDungeon
         public List<Room> rooms;
 
         public LevelSize levelsize = LevelSize.SMALL;
+        public Biome biome;
+
+        public int floor;
         public int roomNum;
         public Rect levelr;
         public int exitnum;
@@ -42,8 +52,10 @@ namespace ArcanaDungeon
         public void Create()
         {
             Random random = new Random();
+            biome = (Biome)random.Next(0, 2);
+            Debug.Log(biome);
             roomNum = random.Next(0, 6) + (int)levelsize;
-            maxEnemies = (int)levelsize / 2;
+            maxEnemies = roomNum / 2;
             InitRooms();
 
             foreach (Room r1 in rooms)

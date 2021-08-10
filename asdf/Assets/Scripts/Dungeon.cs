@@ -3,27 +3,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ArcanaDungeon.Object;
+using Random = System.Random;
+
 
 namespace ArcanaDungeon
 {
     public class Dungeon : MonoBehaviour
     {
+        public static Random random = new Random();
 
         public const int burnt = 0x01;
         public const int stun = 0x02;
 
-        public GameObject wallTile, floorTile, upStairsTile, downStairsTile;
-        public GameObject doorTile;
-        public GameObject Player, Enemy1;
+        public GameObject[] Tiles;
+        public GameObject[] Mobs;
+        public GameObject[] Players;
+
+
+        public GameObject Player;
         public player Plr;
-        public Enemy Ene;
+        
         public List<Level> levels = new List<Level>();
+        public List<List<GameObject>> enemies = new List<List<GameObject>>();
+
         public Level currentlevel;
+        public GameObject[] currentMobPool;
         public int changed = 0;
         public int whosTurn = 0;//1 = 플레이어 2 = 몬스터
         public static Dungeon dungeon;
 
-        private void Awake() 
+        private void Awake()
         {
             if (dungeon == null)
             {
@@ -35,24 +44,36 @@ namespace ArcanaDungeon
                 if (dungeon != this)
                     Destroy(this.gameObject);
             }// 오브젝트 싱글턴화. 시작시 할당되는 자기 자신(씬에 있는 그거)만 유일한 dungeon이다.
+
+            //프리팹 로드
+            Tiles = Resources.LoadAll<GameObject>("prefabs/Tiles");
+            Mobs = Resources.LoadAll<GameObject>("prefabs/Enemies");
+            Players = Resources.LoadAll<GameObject>("prefabs/Player");
+
+
             currentlevel = new RegularLevel();
             currentlevel.Create();
             levels.Add(currentlevel);
+            currentlevel.floor = 1;
             PrintLevel();
-            
-            Player = Instantiate(Player, new Vector2(0, 0), Quaternion.identity)as GameObject;
+            SpawnMobs();
+
+            Player = Players[0];
+            Player = Instantiate(Player, new Vector2(0, 0), Quaternion.identity) as GameObject;
             Plr = Player.GetComponent<player>();
             Plr.Spawn();
 
+            /*
             //턴 테스트용 쥐 한마리
-            Enemy1= Instantiate(Enemy1, new Vector2(Plr.PlayerPos.x, Plr.PlayerPos.y+1), Quaternion.identity) as GameObject;
+            GameObject Enemy1= Instantiate(Enemy1, new Vector2(Plr.PlayerPos.x, Plr.PlayerPos.y+1), Quaternion.identity) as GameObject;
             Ene = Enemy1.GetComponent<Enemy>();
             Ene.Spawn(); 
             Ene.HpChange(200); // 체력 설정 임의로함 나중에 몹 스포너에서 서정하게 해야할 듯 jgh.
+            */
 
 
             whosTurn = 1;//플레이어 턴
-            
+
         }
         public void NextLevel()
         {
@@ -65,7 +86,7 @@ namespace ArcanaDungeon
                     continue;
                 Destroy(child.gameObject);
             }
-
+            DeSpawnMobs();
             //내려간 계단 자리 확인
             currentlevel.laststair = new Vector2((int)Plr.transform.position.x, (int)Plr.transform.position.y);
 
@@ -74,16 +95,17 @@ namespace ArcanaDungeon
             {
                 l.Create();
                 levels.Add(l);
+                l.floor = currentlevel.floor + 1;
                 currentlevel = l;
             }
             else//마지막층이 아니면, 이미 있는 다음층을 깐다.
             {
-                currentlevel = levels[levels.IndexOf(currentlevel) + 1];
+                currentlevel = levels[currentlevel.floor];
             }
             PrintLevel();
-
             Plr.Spawn();
             Player.transform.position = Plr.PlayerPos;
+            SpawnMobs();
         }//여기 판 갈아주세요 (판 치우고 새로 깔아야 한다.)
 
         public void PrevLevel()
@@ -95,76 +117,121 @@ namespace ArcanaDungeon
                     continue;
                 Destroy(child.gameObject);
             }
+            DeSpawnMobs();
 
-            currentlevel = levels[levels.IndexOf(currentlevel) - 1];
+            currentlevel = levels[currentlevel.floor -2];
             PrintLevel();
             Plr.Spawn(new Vector2(currentlevel.laststair.x + 1, currentlevel.laststair.y));
             Player.transform.position = Plr.PlayerPos;
+            SpawnMobs();
         }//이전 층으로 갈 때는, 내려갈 때 저장된 계단 위치로 이동한다.
         public void PrintLevel()
         {
-            for (int i = 0; i < currentlevel.width; i++){
-                for (int j = 0; j < currentlevel.height; j++){
+            for (int i = 0; i < currentlevel.width; i++)
+            {
+                for (int j = 0; j < currentlevel.height; j++)
+                {
                     GameObject tileObject;
-                    int tile = currentlevel.map[i,j];
+                    int tile = currentlevel.map[i, j];
                     switch (tile)
                     {
                         case Terrain.EMPTY:
                             continue;
                         case Terrain.GROUND:
-                            tileObject = floorTile;
+                            switch (currentlevel.biome)
+                            {
+                                case Biome.FIRE:
+                                    tileObject = Tiles[Array.FindIndex(Tiles, t => t.name == "FloorTile_Fire")];
+                                    break;
+                                default:
+                                    tileObject = Tiles[Array.FindIndex(Tiles, t => t.name == "FloorTile")];
+                                    break;
+                            }
                             break;
                         case Terrain.WALL:
-                            tileObject = wallTile;
+                            switch (currentlevel.biome)
+                            {
+                                case Biome.FIRE:
+                                    tileObject = Tiles[Array.FindIndex(Tiles, t => t.name == "WallTile_Fire")];
+                                    break;
+                                default:
+                                    tileObject = Tiles[Array.FindIndex(Tiles, t => t.name == "WallTile")];
+                                    break;
+                            }
                             break;
                         case Terrain.STAIRS_UP:
-                            tileObject = upStairsTile;
+                            switch (currentlevel.biome)
+                            {
+                                case Biome.FIRE:
+                                    tileObject = Tiles[Array.FindIndex(Tiles, t => t.name == "Upstairs_Fire")];
+                                    break;
+                                default:
+                                    tileObject = Tiles[Array.FindIndex(Tiles, t => t.name == "Upstairs")];
+                                    break;
+                            }
                             break;
                         case Terrain.STAIRS_DOWN:
-                            tileObject = downStairsTile;
+                            switch (currentlevel.biome)
+                            {
+                                case Biome.FIRE:
+                                    tileObject = Tiles[Array.FindIndex(Tiles, t => t.name == "Downstairs_Fire")];
+                                    break;
+                                default:
+                                    tileObject = Tiles[Array.FindIndex(Tiles, t => t.name == "Downstairs")];
+                                    break;
+                            }
                             break;
                         case Terrain.DOOR:
-                            tileObject = doorTile;
+                            switch (currentlevel.biome)
+                            {
+                                case Biome.FIRE:
+                                    tileObject = Tiles[Array.FindIndex(Tiles, t => t.name == "DoorTile_Fire")];
+                                    break;
+                                default:
+                                    tileObject = Tiles[Array.FindIndex(Tiles, t => t.name == "DoorTile")];
+                                    break;
+                            }
                             break;
                         default:
                             continue;
                     }
+
                     GameObject newTile = Instantiate(tileObject, new Vector2(i, j), Quaternion.identity) as GameObject;
                     newTile.transform.SetParent(this.transform, false);
                     try
                     {
-                        currentlevel.temp_gameobjects[i,j]=newTile;//★나중에 그래픽 표현 방법이랑 좌표 체계 정리해야 한다
+                        currentlevel.temp_gameobjects[i, j] = newTile;//★나중에 그래픽 표현 방법이랑 좌표 체계 정리해야 한다
                     }
-                    catch (Exception e) {
+                    catch (Exception e)
+                    {
                         Debug.Log(e);
                     }
                 }
-            }
-        }//현재 레벨의 맵 화면상에 출력
-
+            }//현재 레벨의 맵 화면상에 출력
+        }
         private void Update()
         {
 
-            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_DOWN && levels.IndexOf(currentlevel) < 2)
+            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_DOWN && currentlevel.floor <= 3)
             {
                 NextLevel();
             }
-            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_UP && levels.IndexOf(currentlevel) > 0)
+            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_UP && currentlevel.floor > 1)
             {
                 PrevLevel();
             }
             //턴
-            if ( Plr.isPlayerTurn == false)
+            if (Plr.isPlayerTurn == false)
             {
                 Debug.Log("몬스터 턴!");
-                Ene.turn();
+                foreach(GameObject mob in enemies[currentlevel.floor - 1])
+                {
+                    mob.GetComponent<Enemy>().turn();
+                }
                 Plr.isPlayerTurn = true;
 
             }
             //if (Ene.isEnemyturn == false)
-                
-
-
 
 
         }
@@ -179,7 +246,56 @@ namespace ArcanaDungeon
             return (x_gap > y_gap ? x_gap : y_gap);
         }
 
-       
+        public void SpawnMobs()//레벨 지형이 깔린 뒤 실행.
+        {
+            Debug.Log(currentlevel.floor);
+            if (enemies.Count == 0 || enemies.Count == levels.Count -1)//현재 레벨이 처음이면, 몬스터를 조건에 맞게 스폰한다.
+            {
+                Debug.Log("asdfasdfasdfasdf");
+                List<GameObject> enemylist = new List<GameObject>();
+                for (int i = 0; i < currentlevel.maxEnemies; i++)
+                {
+                    GameObject mob;
+                    switch (currentlevel.biome)
+                    {
+                        case Biome.FIRE:
+                            mob = Mobs[Array.FindIndex(Mobs, m => m.name == "Rat_Fire")];
+                            break;
+                        default:
+                            mob = Mobs[Array.FindIndex(Mobs, m => m.name == "Rat")];
+                            break;
+                    }
 
+                    Vector2 pos = new Vector2();
+                    while (true)
+                    {
+                        int x = random.Next(0, currentlevel.levelr.xMax);
+                        int y = random.Next(0, currentlevel.levelr.yMax);
+                        if (currentlevel.map[x, y] == Terrain.GROUND)
+                        {
+                            pos = new Vector2(x, y);
+                            break;
+                        }
+                    }
+                    enemylist.Add(Instantiate(mob, pos, Quaternion.identity));
+                }
+                enemies.Add(enemylist);
+            }
+            else
+            {
+                foreach(GameObject mob in enemies[currentlevel.floor - 1])
+                {
+                    mob.SetActive(true);
+                }
+            }//새 층이 아니라서 존재하는 몬스터 풀이 있을 경우, 디스폰(비활성화)한걸 다시 활성화만 한다.
+        }
+        public void DeSpawnMobs()
+        {
+            Debug.Log("Despawned.");
+            foreach (GameObject mob in enemies[currentlevel.floor - 1])
+            {
+                mob.SetActive(false);
+            }
+        }
     }
 }

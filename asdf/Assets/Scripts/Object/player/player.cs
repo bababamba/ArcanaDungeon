@@ -69,10 +69,6 @@ namespace ArcanaDungeon.Object
                 spriteRenderer.flipX = Input.GetAxisRaw("Horizontal") == -1;
 
 
-
-
-
-
         }
 
         private void FixedUpdate()
@@ -81,8 +77,8 @@ namespace ArcanaDungeon.Object
             {
                 Debug.Log("Q눌렸으");
 
-                atcd.UseCard(Dungeon.dungeon.Ene);
-                Debug.Log("플레이어측 체력" + Dungeon.dungeon.Ene.GetHp());
+                //atcd.UseCard(Dungeon.dungeon.Ene);
+                //Debug.Log("플레이어측 체력" + Dungeon.dungeon.Ene.GetHp());
             }// 임시 키 입력 
             if (isPlayerTurn == true)
             {

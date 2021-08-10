@@ -18,6 +18,8 @@ namespace ArcanaDungeon.Object
 
         private int condition;  //물체가 보유한 상태이상 및 버프를 나타냄, 각각의 효과들은 d에 상수로 보관되어 있음
 
+        public string name;
+
         public Thing()
         {
             condition = 0;
@@ -28,7 +30,7 @@ namespace ArcanaDungeon.Object
         //hp 관련 함수
         public int GetHp()
         {
-            return hp;
+            return this.hp;
         }
 
         public void HpChange(int val)

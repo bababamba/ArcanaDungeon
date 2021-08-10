@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using ArcanaDungeon.rooms;
 using ArcanaDungeon.painters;
+using ArcanaDungeon.Object;
 using UnityEngine;
 using Random = System.Random;
 using Rect = ArcanaDungeon.util.Rect;
@@ -23,10 +24,12 @@ namespace ArcanaDungeon
             PlaceRooms();
             levelr = LevelRect();
             MoveRooms();
-            map = new int[width,height];
-            for (int i = 0; i < width; i++) {
-                for (int j = 0; j < height; j++) {
-                    map[i,j] = Terrain.WALL;
+            map = new int[width, height];
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    map[i, j] = Terrain.WALL;
                 }
             }
         }
@@ -171,6 +174,7 @@ namespace ArcanaDungeon
         public override void SpawnMobs()
         {
             
+
         }
     }
 }

@@ -18,6 +18,16 @@ namespace ArcanaDungeon.Object
         int[,] Plr_pos = new int[2, 2];  //0번 인덱스는 실제 플레이어 위치, 1번 인덱스는 마지막으로 본 플레이어 위치
 
         public bool[,] FOV;
+
+        public Enemy Copy()
+        {
+            Enemy e = new Enemy();
+            //여기에 필드 복사
+            e.isEnemyturn = this.isEnemyturn;
+
+            return e;
+        }
+
         public void Update()
         { //★몬스터 알고리즘 확인용 임시 함수, 나중에 꼭 삭제할 것
             if (isEnemyturn == true)
