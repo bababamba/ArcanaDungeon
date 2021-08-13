@@ -81,37 +81,34 @@ namespace ArcanaDungeon.Object
         //이동 관련 함수
         public void move() { }
 
-        public void route_BFS(int dest_x, int dest_y, bool[,] fov)    //넓이 우선 탐색으로 목적지까지의 경로를 route_pos에 저장해주는 함수
+        public void route_BFS(int dest_x, int dest_y)    //넓이 우선 탐색으로 목적지까지의 경로를 route_pos에 저장해주는 함수
         {
             //route_BFS에서의 좌표는 x+y*(맵 너비)로 나타낸다. BFS 알고리즘을 최대한 간략하게 구현하기 위해 부득이하게 좌표를 int 변수 1개로 나타낸 것이다
             int destination = dest_x + dest_y * Dungeon.dungeon.currentlevel.width;
-            List<int> checking = new List<int>();
+            Queue<int> checking = new Queue<int>();
             int[] prev = new int[Dungeon.dungeon.currentlevel.length];
             int[] dir = new int[] { -1, -1 + Dungeon.dungeon.currentlevel.width, Dungeon.dungeon.currentlevel.width, 1 + Dungeon.dungeon.currentlevel.width, 1, 1 - Dungeon.dungeon.currentlevel.width, -Dungeon.dungeon.currentlevel.width, -1 - Dungeon.dungeon.currentlevel.width };
 
-
-            int FOV_true = 0; foreach (bool b in fov) { if (b) { FOV_true++; } }
-
-            checking.Add((int)(transform.position.x + transform.position.y * Dungeon.dungeon.currentlevel.width));
+            checking.Enqueue((int)(transform.position.x + transform.position.y * Dungeon.dungeon.currentlevel.width));
             int temp, temp2;
-            for (int i = 0; i < FOV_true - 1; i++)
+            while (checking.Count > 0)
             {
                 //주변 좌표 포함 시 확인해야 하는 것 : 몬스터의 cur_pos가 아닌가, passable인가?, level의 length 범위 이내의 숫자인가, prev[i]==null인가
                 for (int ii = 0; ii < 8; ii++)
                 {
-                    temp = checking[i] + dir[ii];
+                    temp = checking.Peek() + dir[ii];
                     if ((transform.position.x + transform.position.y * Dungeon.dungeon.currentlevel.width != temp) & ((Dungeon.dungeon.currentlevel.map[temp % Dungeon.dungeon.currentlevel.width, temp / Dungeon.dungeon.currentlevel.width] & Terrain.passable) != 0)
                         & (temp > 0 & temp < Dungeon.dungeon.currentlevel.length) & (prev[temp] == 0))
                     {
-                        checking.Add(temp);
-                        prev[temp] = checking[i];
+                        checking.Enqueue(temp);
+                        prev[temp] = checking.Peek();
                     }
                 }
 
                 //Plr_pos[0]이랑 같은 좌표인지 확인, 맞으면 prev 배열 쭉 타고올라가면서 route_pos에 저장
-                if (checking[i] == destination)
+                if (checking.Peek() == destination)
                 {
-                    temp2 = checking[i];
+                    temp2 = checking.Peek();
                     route_pos.Clear();
                     while (prev[temp2] != 0)
                     {
@@ -120,6 +117,7 @@ namespace ArcanaDungeon.Object
                     }
                     break;
                 }
+                checking.Dequeue();
             }
 
             return;

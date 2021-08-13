@@ -84,7 +84,7 @@ namespace ArcanaDungeon.Object
 
             if (Plr_pos[0, 0] != -1)
             {
-                route_BFS(Plr_pos[0, 0], Plr_pos[0, 1], FOV);
+                route_BFS(Plr_pos[0, 0], Plr_pos[0, 1]);
             }
 
             //★몬스터의 시야 범위를 파랑색으로, 몬스터의 cur_pos는 녹색으로 나타낸다, 당연히 몬스터의 시야 범위를 보여줄 필요가 없으므로 나중에 삭제할 것
