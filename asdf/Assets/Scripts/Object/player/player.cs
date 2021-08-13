@@ -35,10 +35,14 @@ namespace ArcanaDungeon.Object
 
         public Vector2 PlayerPos = new Vector2(0, 0);
         public Vector2 MoveVector = new Vector2(0, 0);
-
+        public Vector2 MousePos = new Vector2(0, 0);
+        Camera cam;
 
         int MoveTimer = 0;
         int dir = 0;
+        int Mou_x = 0;
+        int Mou_y = 0;
+        bool isMouseMove = false;
 
         public bool[,] FOV;
         // Start is called before the first frame update
@@ -48,6 +52,7 @@ namespace ArcanaDungeon.Object
             anim = GetComponent<Animator>();
             rigid = GetComponent<Rigidbody2D>();
             tr = GetComponent<Transform>();
+            cam = GameObject.Find("Main Camera").GetComponent<Camera>();
             if (me == null)
                 me = this;
         }
@@ -57,22 +62,31 @@ namespace ArcanaDungeon.Object
             anim = GetComponent<Animator>();
             rigid = GetComponent<Rigidbody2D>();
             tr = GetComponent<Transform>();
+            cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+
             if (me == null)
                 me = this;
         }
 
         // Update is called once per frame
         void Update()
-        {
+        {if (isPlayerTurn == true)
+            {
+                if(MoveTimer == 0)
+                Get_MouseInput(); //마우스 입력
 
-            if (Input.GetButton("Horizontal"))
-                spriteRenderer.flipX = Input.GetAxisRaw("Horizontal") == -1;
-
+                if (Input.GetButton("Horizontal"))
+                    spriteRenderer.flipX = Input.GetAxisRaw("Horizontal") == -1;
+            }
 
         }
 
         private void FixedUpdate()
         {//입력받는곳
+
+
+
+
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 Debug.Log("Q눌렸으");
@@ -80,9 +94,9 @@ namespace ArcanaDungeon.Object
                 //atcd.UseCard(Dungeon.dungeon.Ene);
                 //Debug.Log("플레이어측 체력" + Dungeon.dungeon.Ene.GetHp());
             }// 임시 키 입력 
-            if (isPlayerTurn == true)
+            if (isPlayerTurn == true && isMouseMove == false)
             {
-                
+
                 if (MoveTimer == 0)
                 {
 
@@ -155,7 +169,7 @@ namespace ArcanaDungeon.Object
 
                     }
                 }
-                
+
             }
 
 
@@ -217,8 +231,42 @@ namespace ArcanaDungeon.Object
                     break;
 
             }
+            if (transform.position.x == Mou_x && transform.position.y == Mou_y )
+            {
+                isMouseMove = false;
+                
+            }
+          
+            else if(MoveTimer == 0 && isMouseMove == true)
+            {
+                transform.position = new Vector2(route_pos[0] % Dungeon.dungeon.currentlevel.width, route_pos[0] / Dungeon.dungeon.currentlevel.width);
+                route_pos.RemoveAt(0);
+                MoveTimer = MoveTimerLimit;
+                isPlayerTurn = false;
+            }
+           
+
+        }
+        private void Get_MouseInput()
+        {
+            
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                
+                MousePos = Input.mousePosition;
+                MousePos = cam.ScreenToWorldPoint(MousePos);
+                isMouseMove = true;
 
 
+
+
+                Mou_x = Mathf.RoundToInt(MousePos.x);
+                Mou_y = Mathf.RoundToInt(MousePos.y);
+                route_BFS(Mou_x, Mou_y);
+                
+                Debug.Log("x = " + Mou_x +"("+ MousePos.x + ") y = " + Mou_y +"(" + MousePos.y + ")");
+            }
         }
         public override void Spawn()
         {
