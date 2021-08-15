@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,13 +21,11 @@ namespace ArcanaDungeon.Object
         AttackCard atcd = new AttackCard();
 
         public player me = null;
-        private bool isturn;    //플레이어턴 동안 true;
 
         private int hand_limit; //패 장수 제한
 
         public float MovePower = 0.2f;
         public int MoveTimerLimit = 5;
-        public bool isPlayerTurn = true;
         public SpriteRenderer spriteRenderer;
         public Animator anim;
         public Rigidbody2D rigid;
@@ -39,7 +38,6 @@ namespace ArcanaDungeon.Object
         Camera cam;
 
         int MoveTimer = 0;
-        int dir = 0;
         int Mou_x = 0;
         int Mou_y = 0;
         bool isMouseMove = false;
@@ -55,6 +53,11 @@ namespace ArcanaDungeon.Object
             cam = GameObject.Find("Main Camera").GetComponent<Camera>();
             if (me == null)
                 me = this;
+
+            maxhp = 100;
+            maxstamina = 100;
+            HpChange(maxhp);
+            StaminaChange(maxstamina);
         }
         void Start()
         {
@@ -70,13 +73,16 @@ namespace ArcanaDungeon.Object
 
         // Update is called once per frame
         void Update()
-        {if (isPlayerTurn == true)
+        {if (isTurn > 0)
             {
-                if(MoveTimer == 0)
-                Get_MouseInput(); //마우스 입력
+                if(MoveTimer <= 0)
+                    Get_MouseInput(); //마우스 입력
 
                 if (Input.GetButton("Horizontal"))
                     spriteRenderer.flipX = Input.GetAxisRaw("Horizontal") == -1;
+
+                StaminaChange(5);//★아무 행동도 하지 않으면 회복량이 3배가 되도록 해야 함
+                isTurn -= 1;
             }
 
         }
@@ -94,7 +100,7 @@ namespace ArcanaDungeon.Object
                 //atcd.UseCard(Dungeon.dungeon.Ene);
                 //Debug.Log("플레이어측 체력" + Dungeon.dungeon.Ene.GetHp());
             }// 임시 키 입력 
-            if (isPlayerTurn == true && isMouseMove == false)
+            /*if (isTurn == true && isMouseMove == false)
             {
 
                 if (MoveTimer == 0)
@@ -174,8 +180,7 @@ namespace ArcanaDungeon.Object
 
 
             //입력받는곳 끝
-            if (MoveTimer > 0)
-                MoveTimer--;
+            
             //playermove
             switch (dir)
             {
@@ -188,7 +193,7 @@ namespace ArcanaDungeon.Object
                         anim.SetBool("iswalking", false);
                         transform.position = PlayerPos;
                         vision_marker();//★나중에 플레이어의 Turn() 함수가 완성되면 그쪽에서 1번만 실행되게 옮길 것, 아래의 같은 함수들도 동일
-                        isPlayerTurn = false;            //Debug.Log("2");
+                        isTurn = false;            //Debug.Log("2");
                     }
                     break;
                 case 2:
@@ -200,7 +205,7 @@ namespace ArcanaDungeon.Object
                         vision_marker();//★
                         dir = 0;
                         anim.SetBool("iswalking", false);
-                        isPlayerTurn = false;
+                        isTurn = false;
                     }
                     break;
                 case 3:
@@ -212,7 +217,7 @@ namespace ArcanaDungeon.Object
                         vision_marker();//★
                         dir = 0;
                         anim.SetBool("iswalking", false);
-                        isPlayerTurn = false;
+                        isTurn = false;
                     }
                     break;
                 case 4:
@@ -224,25 +229,29 @@ namespace ArcanaDungeon.Object
                         vision_marker();//★
                         dir = 0;
                         anim.SetBool("iswalking", false);
-                        isPlayerTurn = false;
+                        isTurn = false;
                     }
                     break;
                 default:
                     break;
-
-            }
+            }*/
+            if (MoveTimer > 0)
+                MoveTimer--;
             if (transform.position.x == Mou_x && transform.position.y == Mou_y )
             {
                 isMouseMove = false;
                 
             }
           
-            else if(MoveTimer == 0 && isMouseMove == true)
+            else if(MoveTimer <= 0 && isMouseMove == true)
             {
-                transform.position = new Vector2(route_pos[0] % Dungeon.dungeon.currentlevel.width, route_pos[0] / Dungeon.dungeon.currentlevel.width);
-                route_pos.RemoveAt(0);
-                MoveTimer = MoveTimerLimit;
-                isPlayerTurn = false;
+                try //다음 층으로 이동하면 배열 인덱스 범위를 벗어났다는 오류가 뜬다, 아무래도 층을 이동하면서 route_pos에 문제가 생기는 것으로 보인다
+                {
+                    transform.position = new Vector2(route_pos[0] % Dungeon.dungeon.currentlevel.width, route_pos[0] / Dungeon.dungeon.currentlevel.width);
+                    route_pos.RemoveAt(0);
+                    MoveTimer = MoveTimerLimit;
+                }
+                catch (Exception e) { }
             }
            
 

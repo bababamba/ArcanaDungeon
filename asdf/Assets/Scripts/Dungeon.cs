@@ -12,9 +12,6 @@ namespace ArcanaDungeon
     {
         public static Random random = new Random();
 
-        public const int burnt = 0x01;
-        public const int stun = 0x02;
-
         public GameObject[] Tiles;
         public GameObject[] Mobs;
         public GameObject[] Players;
@@ -221,15 +218,14 @@ namespace ArcanaDungeon
                 PrevLevel();
             }
             //턴
-            if (Plr.isPlayerTurn == false)
+            if (Plr.isTurn <= 0)
             {
                 Debug.Log("몬스터 턴!");
                 foreach(GameObject mob in enemies[currentlevel.floor - 1])
                 {
-                    mob.GetComponent<Enemy>().turn();
+                    mob.GetComponent<Enemy>().isTurn += 1;
                 }
-                Plr.isPlayerTurn = true;
-
+                Plr.isTurn += 1;
             }
             //if (Ene.isEnemyturn == false)
 

@@ -11,9 +11,6 @@ namespace ArcanaDungeon.Object
     {
 
         bool isawaken;
-        int move_speed;
-        int action_per_turn;
-        public bool isEnemyturn = false;
 
         int[,] Plr_pos = new int[2, 2];  //0번 인덱스는 실제 플레이어 위치, 1번 인덱스는 마지막으로 본 플레이어 위치
 
@@ -23,14 +20,14 @@ namespace ArcanaDungeon.Object
         {
             Enemy e = new Enemy();
             //여기에 필드 복사
-            e.isEnemyturn = this.isEnemyturn;
+            e.isTurn = this.isTurn;
 
             return e;
         }
 
         public void Update()
         { //★몬스터 알고리즘 확인용 임시 함수, 나중에 꼭 삭제할 것
-            if (isEnemyturn == true)
+            if (isTurn > 0)
             {
                 Vision_research();
 
@@ -43,7 +40,7 @@ namespace ArcanaDungeon.Object
                     transform.position = new Vector2(route_pos[0] % Dungeon.dungeon.currentlevel.width, route_pos[0] / Dungeon.dungeon.currentlevel.width);
                     route_pos.RemoveAt(0);
                 }
-                this.isEnemyturn = false;
+                this.isTurn -= 1;
             }
         }
 
@@ -59,7 +56,7 @@ namespace ArcanaDungeon.Object
 
         public override void turn()
         {
-            isEnemyturn = true;
+
         }
 
         private void Vision_research()
