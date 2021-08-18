@@ -11,9 +11,9 @@ namespace ArcanaDungeon.Object
     public class Enemy : Thing
     {
 
-        bool isawaken;
+        bool isawaken;  //★이 함수가 정말 필요한지는 차차 생각해보자
 
-        int[,] Plr_pos = new int[2, 2];  //0번 인덱스는 실제 플레이어 위치, 1번 인덱스는 마지막으로 본 플레이어 위치
+        protected int[,] Plr_pos = new int[2, 2];  //0번 인덱스는 실제 플레이어 위치, 1번 인덱스는 마지막으로 본 플레이어 위치
 
         public bool[,] FOV;
 
@@ -26,7 +26,7 @@ namespace ArcanaDungeon.Object
             return e;
         }
 
-        public void Update()
+        public void FixedUpdate()
         { //★몬스터 알고리즘 확인용 임시 함수, 나중에 꼭 삭제할 것
             if (isTurn > 0)
             {
@@ -41,7 +41,7 @@ namespace ArcanaDungeon.Object
                     transform.position = new Vector2(route_pos[0] % Dungeon.dungeon.currentlevel.width, route_pos[0] / Dungeon.dungeon.currentlevel.width);
                     route_pos.RemoveAt(0);
                 }
-                this.isTurn -= 1;
+                isTurn -= 1;
             }
         }
 
@@ -60,7 +60,7 @@ namespace ArcanaDungeon.Object
 
         }
 
-        private void Vision_research()
+        protected void Vision_research()
         {
             FOV = new bool[Dungeon.dungeon.currentlevel.width, Dungeon.dungeon.currentlevel.height];
             Visionchecker.vision_check((int)Mathf.Round(transform.position.x), (int)Mathf.Round(transform.position.y), 6, FOV);
@@ -104,8 +104,9 @@ namespace ArcanaDungeon.Object
             }
         }
 
-        private void range_attack(int dest_x, int dest_y, int val, bool pierce) { //원거리 공격, 스킬이나 기본 공격 등에서 사용할 것, pierce는 공격 범위 안의 모든 적을 공격하는 관통 공격일 경우 true가 된다
+        protected void range_attack(int dest_x, int dest_y, int val, bool pierce) { //원거리 공격, 스킬이나 기본 공격 등에서 사용할 것, pierce는 공격 범위 안의 모든 적을 공격하는 관통 공격일 경우 true가 된다
             //이 몬스터의 현재 좌표부터 (dest_x,dest_y)까지 맞닿는 사각형 좌표들을 구해옴   
+            Debug.Log("range_attack까지는 실행됩니다.");
                 List<float[]> result = new List<float[]>();
                 if (dest_y-transform.position.y == 0){
                     for (float i=transform.position.x; i<=dest_x; i++){
@@ -129,29 +130,46 @@ namespace ArcanaDungeon.Object
                         slope = Math.Abs(dest_y-transform.position.y)/ Math.Abs(dest_x-transform.position.x);
                     }
                     less_slope += 0.5f;
-                    for (; more_slope<more_slope+(slope/2); more_slope++){ result.Add(mirrored ? new float[2] { more_slope, less_slope-0.5f} : new float[2] { less_slope-0.5f, more_slope}); }
-                    while (less_slope+1<=(mirrored ? dest_y : dest_x) & more_slope+slope<=(mirrored ? dest_x : dest_y)){
-                        for (; more_slope<more_slope+slope; more_slope++){ result.Add(mirrored ? new float[2] { more_slope, less_slope-0.5f} : new float[2] { less_slope-0.5f, more_slope}); }
+                    if (mirrored) {
+                        for (float i=more_slope; more_slope < i + (slope / 2); more_slope++) { result.Add(new float[2] { more_slope, less_slope - 0.5f }); }
+                        while (less_slope + 1 <= dest_y | more_slope + slope <= dest_x )
+                        {
+                            for (float i=more_slope; more_slope < i + slope; more_slope++) { result.Add(new float[2] { more_slope, less_slope - 0.5f } ); }
+                            less_slope += 1f;
+                        }
+                    } else {
+                        for (float i=more_slope; more_slope < i + (slope / 2); more_slope++) { result.Add(new float[2] { less_slope - 0.5f, more_slope }); }
+                        while (less_slope + 1 <= dest_x | more_slope + slope <= dest_y)
+                        {
+                            for (float i=more_slope; more_slope < i + slope; more_slope++) { result.Add(new float[2] { less_slope - 0.5f, more_slope }); }
+                            less_slope += 1f;
+                        }
                     }
                 }
-                    
+                
+            Debug.Log("공격 도중에 지나가는 좌표 수집 완료했습니다.");
             if (pierce){
-                foreach (Thing t in Dungeon.dungeon.currentlevel.enemies){
+                foreach (GameObject t in Dungeon.dungeon.enemies[Dungeon.dungeon.currentlevel.floor-1]){
                     if (result.Contains(new float[2] { t.transform.position.x, t.transform.position.y})){
-                        t.HpChange(-val);
+                        t.GetComponent<Enemy>().HpChange(-val);
                     }
                 }
                 if (result.Contains(new float[2] { Dungeon.dungeon.Plr.transform.position.x, Dungeon.dungeon.Plr.transform.position.y})){
                     Dungeon.dungeon.Plr.HpChange(-val);
                 }
-                //★대충 하얀 레이저가 시작점에서 도착점에 1초 정도 걸침, 관통 공격이기 때문에 대상이 없어도 어찌 됐든 발사한다
-            }else{
+                //LineRenderer가 들어간 부분은 전부 그래픽 관련이라고 보아도 무방하다
+                Dungeon.dungeon.GetComponent<LineRenderer>().SetPosition(0, new Vector3(transform.position.x, transform.position.y,-1));
+                Dungeon.dungeon.GetComponent<LineRenderer>().SetPosition(1, new Vector3(dest_x, dest_y,-1));
+                Dungeon.dungeon.GetComponent<LineRenderer>().SetColors(new Color(1f, 1f, 1f, 1f), new Color(1f, 1f, 1f, 1f));
+            }
+            else{
                 //Dungeon.dungeon.currentlevel.mobs와 Plr 과 그 좌표들을 비교하여 가장 가까운 대상을 찾아옴
                 Thing closest = null;
                 int closest_distance = 999;
-                foreach (Thing t in Dungeon.dungeon.currentlevel.enemies){
+                foreach (GameObject t in Dungeon.dungeon.enemies[Dungeon.dungeon.currentlevel.floor - 1])
+                {
                     if (result.Contains(new float[2] { t.transform.position.x, t.transform.position.y}) & Dungeon.distance_cal(transform, t.transform)<closest_distance){
-                        closest = t;
+                        closest = t.GetComponent<Enemy>();
                         closest_distance = Dungeon.distance_cal(transform, t.transform);
                     }
                 }
@@ -165,6 +183,7 @@ namespace ArcanaDungeon.Object
                     //★route_pos[0] 좌표로 이동, move()로 이동 관련 부분을 똑 떼어놓고 사용하는 게 나을 것 같다
                 }
             }
+                
         }
     }
 }

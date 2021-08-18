@@ -73,25 +73,23 @@ namespace ArcanaDungeon.Object
 
         // Update is called once per frame
         void Update()
-        {if (isTurn > 0)
+        {
+            if (isTurn > 0)
             {
-                if(MoveTimer <= 0)
+                if (MoveTimer <= 0)
                     Get_MouseInput(); //마우스 입력
 
                 if (Input.GetButton("Horizontal"))
                     spriteRenderer.flipX = Input.GetAxisRaw("Horizontal") == -1;
 
                 StaminaChange(5);//★아무 행동도 하지 않으면 회복량이 3배가 되도록 해야 함
-                isTurn -= 1;
-            }
 
+            }
         }
 
         private void FixedUpdate()
         {//입력받는곳
-
-
-
+            
 
             if (Input.GetKeyDown(KeyCode.Q))
             {
@@ -250,6 +248,7 @@ namespace ArcanaDungeon.Object
                     transform.position = new Vector2(route_pos[0] % Dungeon.dungeon.currentlevel.width, route_pos[0] / Dungeon.dungeon.currentlevel.width);
                     route_pos.RemoveAt(0);
                     MoveTimer = MoveTimerLimit;
+                    isTurn -= 1;
                 }
                 catch (Exception e) { }
             }

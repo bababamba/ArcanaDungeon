@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7658389663560985600}
   - component: {fileID: 1139519099754044936}
-  - component: {fileID: 7781173631841807595}
   - component: {fileID: 7424922315262478536}
+  - component: {fileID: -5159731055146853140}
   m_Layer: 0
   m_Name: Rat_Fire
   m_TagString: Untagged
@@ -85,21 +85,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7781173631841807595
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2091921188105146450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 004289d27d7835143ad5fb821da8dbe5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  route_pos: 
-  name: 
-  isEnemyturn: 0
 --- !u!50 &7424922315262478536
 Rigidbody2D:
   serializedVersion: 4
@@ -121,3 +106,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &-5159731055146853140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2091921188105146450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 004289d27d7835143ad5fb821da8dbe5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isTurn: 0
+  route_pos: 
+  name: 
