@@ -22,7 +22,9 @@ namespace ArcanaDungeon
     public enum Biome
     {
         NORMAL = 0,
-        FIRE = 1
+        FIRE = 1,
+
+        BOSS_SLIME = 10
     }
 
 
@@ -34,11 +36,10 @@ namespace ArcanaDungeon
 
         public List<Room> rooms;
 
-        public LevelSize levelsize = LevelSize.SMALL;
+        public LevelSize levelsize;
         public Biome biome;
 
         public int floor;
-        public int roomNum;
         public Rect levelr;
         public int exitnum;
         public static Random rand = new Random();
@@ -54,8 +55,6 @@ namespace ArcanaDungeon
             Random random = new Random();
             biome = (Biome)random.Next(0, 2);
             Debug.Log(biome);
-            roomNum = random.Next(0, 6) + (int)levelsize;
-            maxEnemies = roomNum / 2;
             InitRooms();
 
             foreach (Room r1 in rooms)
@@ -71,6 +70,8 @@ namespace ArcanaDungeon
                     }
                 }
             }
+
+            maxEnemies = rooms.Count() / 3;
 
             PaintRooms();
             SpawnMobs();
@@ -147,14 +148,14 @@ namespace ArcanaDungeon
             index = -1;
             return true;
         }
-        public bool CheckOverlap(Room r1, Room r2)
+        public bool CheckOverlap(Room r1, Room r2) // 매개변수인 두 방의 겹침 여부 확인.
         {
             Rect rect = r1.Intersect(r1, r2);
             if (rect.Width() > 0 && rect.Height() > 0)
                 return true;
             return false;
         }
-        public bool CheckOverlap(Room r)
+        public bool CheckOverlap(Room r) // 이 방과 겹치는 방이 있는지 모든 방을 검사함.
         {
             foreach (Room r1 in rooms)
             {
@@ -169,7 +170,7 @@ namespace ArcanaDungeon
             }
             return false;
         }
-        public bool CheckOverlap(Room r, out int index)
+        public bool CheckOverlap(Room r, out int index) // 겹치는 방 발견 시, 해당 방 번호를 같이 제공(최초 발견한 방만)
         {
             foreach (Room r1 in rooms)
             {

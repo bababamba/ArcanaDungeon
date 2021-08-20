@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 1139519099754044936}
   - component: {fileID: 7424922315262478536}
   - component: {fileID: 886105674553235224}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Rat_Poison
-  m_TagString: Untagged
+  m_TagString: Mob
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -72,7 +72,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 3
   m_Sprite: {fileID: -5237074582503671387, guid: a10c10ad8cd89ba4f8aecfee1101080d,
     type: 3}
   m_Color: {r: 0.5447297, g: 0, b: 1, a: 1}
@@ -118,6 +118,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 004289d27d7835143ad5fb821da8dbe5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isTurn: 0
   route_pos: 
   name: 
-  isEnemyturn: 0

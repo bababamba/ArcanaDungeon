@@ -74,7 +74,6 @@ namespace ArcanaDungeon
         }
         public void NextLevel()
         {
-            Level l = new RegularLevel();
             //기존에 깔린 판 치우기(어차피 레벨 자체에 맵 정보는 저장되어 있으니 상관없음)
             Transform[] allChildren = GetComponentsInChildren<Transform>();
             foreach (Transform child in allChildren)
@@ -90,6 +89,20 @@ namespace ArcanaDungeon
             //새로 판 깔기
             if (levels.IndexOf(currentlevel) == levels.Count - 1)//현재가 마지막층이면, 새 층을 만들어 깐다.
             {
+                Level l;
+                if (currentlevel.GetType() == typeof(RegularLevel))
+                {
+                    l = new BossLevel();
+                }
+                else if (currentlevel.GetType() == typeof(BossLevel))
+                {
+                    l = new RegularLevel();
+                }
+                else
+                {
+                    l = new RegularLevel();
+                }
+
                 l.Create();
                 levels.Add(l);
                 l.floor = currentlevel.floor + 1;
@@ -209,18 +222,18 @@ namespace ArcanaDungeon
         private void Update()
         {
 
-            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_DOWN && currentlevel.floor <= 3)
+            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_DOWN && currentlevel.floor <= 3 && Plr.MoveTimer <= 0)
             {
                 NextLevel();
             }
-            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_UP && currentlevel.floor > 1)
+            if (currentlevel.map[(int)Plr.transform.position.x, (int)Plr.transform.position.y] == Terrain.STAIRS_UP && currentlevel.floor > 1 && Plr.MoveTimer <= 0)
             {
                 PrevLevel();
             }
             //턴
             if (Plr.isTurn <= 0)
             {
-                Debug.Log("몬스터 턴!");
+                //Debug.Log("몬스터 턴!");
                 foreach(GameObject mob in enemies[currentlevel.floor - 1])
                 {
                     mob.GetComponent<Enemy>().isTurn += 1;
@@ -245,12 +258,11 @@ namespace ArcanaDungeon
             return (x_gap > y_gap ? x_gap : y_gap);
         }
 
-        public void SpawnMobs()//레벨 지형이 깔린 뒤 실행.
+        public void SpawnMobs()//레벨 지형이 깔린 뒤 실행. 일단은 무작위 좌표를 선정하기 때문에 몹 밀도가 불균일하게 나올 수 있다. 시간이 남는다면 방 선정 - 스폰할 몹 수 선정 - 위치 선정의 과정으로 바꿀 것.
         {
             Debug.Log(currentlevel.floor);
             if (enemies.Count == 0 || enemies.Count == levels.Count -1)//현재 레벨이 처음이면, 몬스터를 조건에 맞게 스폰한다.
             {
-                Debug.Log("asdfasdfasdfasdf");
                 List<GameObject> enemylist = new List<GameObject>();
                 for (int i = 0; i < currentlevel.maxEnemies; i++)
                 {
@@ -260,8 +272,11 @@ namespace ArcanaDungeon
                         case Biome.FIRE:
                             mob = Mobs[Array.FindIndex(Mobs, m => m.name == "Rat_Fire")];
                             break;
+                        case Biome.BOSS_SLIME:
+                            mob = Mobs[Array.FindIndex(Mobs, m => m.name == "SlimeColony")];
+                            break;
                         default:
-                            mob = Mobs[Array.FindIndex(Mobs, m => m.name == "Gnole")];
+                            mob = Mobs[Array.FindIndex(Mobs, m => m.name == "Gnoll")];
                             break;
                     }
 

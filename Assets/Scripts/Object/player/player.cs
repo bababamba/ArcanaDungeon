@@ -37,7 +37,7 @@ namespace ArcanaDungeon.Object
         public Vector2 MousePos = new Vector2(0, 0);
         Camera cam;
 
-        int MoveTimer = 0;
+        public int MoveTimer = 0;
         int Mou_x = 0;
         int Mou_y = 0;
         bool isMouseMove = false;
@@ -91,9 +91,9 @@ namespace ArcanaDungeon.Object
         {//입력받는곳
             
 
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Input.GetKey(KeyCode.Q))
             {
-                Debug.Log("Q눌렸으");
+                UI.uicanvas.ShowMessage("나는 공격을 했다!!!");
 
                 //atcd.UseCard(Dungeon.dungeon.Ene);
                 //Debug.Log("플레이어측 체력" + Dungeon.dungeon.Ene.GetHp());

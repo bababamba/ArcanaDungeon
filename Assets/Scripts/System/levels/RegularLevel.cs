@@ -15,6 +15,7 @@ namespace ArcanaDungeon
     {
         public override void InitRooms()
         {
+            levelsize = LevelSize.SMALL;
             rooms = new List<Room>();
             rooms.Add(new UpStairsRoom());
             exitnum = rand.Next(4, 5);
@@ -54,14 +55,15 @@ namespace ArcanaDungeon
                 i++;
             }// 출구방을 정해진 각도와 방향으로 배치한다.
             int n = 0;
-            while (n < rooms.Count)
+            while (n < rooms.Count)//입출구를 제외한 방들을 배치한다.
             {
                 Room d = rooms[n];
                 if (d.GetType() != typeof(DownStairsRoom))
                 {
                     n++;
                     continue;
-                }
+                }//한 통로의 끝이 될 출구를 찾아 둔다. 해당 방향으로 방들을 배치 후, 다시 다른 출구를 찾아 배치하는 방식.
+
                 Room ent = rooms[0];
                 int num = 0;
                 Room room = new EmptyRoom();
