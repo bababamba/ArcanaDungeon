@@ -9,27 +9,39 @@ namespace ArcanaDungeon.Object
     public class SlimeColony : Enemy
     {
         GameObject slime;
+        Transform throw_coordinate;
+
         public void Awake()
         {
+            this.maxhp = 300;
+            this.maxstamina = 100;
+            HpChange(this.maxhp);
+            StaminaChange(this.maxstamina);
+
+            this.maxcooltime = 20;  //★임시 쿨타임
+            this.cooltime = 0;
+
             this.name = "SlimeColony";
             slime = Dungeon.dungeon.Mobs[Array.FindIndex(Dungeon.dungeon.Mobs, m => m.name == "Slime")];
         }
 
         public void FixedUpdate()
-        { //★몬스터 알고리즘 확인용 임시 함수, 나중에 꼭 삭제할 것
+        {
             if (isTurn > 0)
             {
                 Vision_research();
 
                 if (Dungeon.distance_cal(Dungeon.dungeon.Plr.transform, this.transform) <= 1 & Plr_pos[0, 0] != -1)
                 {
-                    Debug.Log("몬스터가 당신을 공격하려고 합니다. 근데 아직 구현이 안 돼서 못 하네요. 저런!");
+                    Debug.Log(this.name + "이(가) 당신을 공격합니다.");
+                    Dungeon.dungeon.Plr.HpChange(-10);  //★Floor에 따라 변경되는 공격력을 변수에 집어넣어서 그 변수만큼만 깎아야 한다
                 }
-                /*else if(Dungeon.distance_cal(Dungeon.dungeon.Plr.transform, this.transform) <= 1 & Plr_pos[0, 0] != -1)
+                else if(Dungeon.distance_cal(Dungeon.dungeon.Plr.transform, this.transform) > 1 & Plr_pos[0, 0] != -1 & this.cooltime <= 0) //근접공격 안되고, 시야 내에 있고, 쿨다운 중이 아닐 경우 슬라임 소환
                 {
-                    ThrowSlime();
-                    //근접공격 안되고, 시야 내에 있고, 쿨다운 중이 아닐 경우에 실행.
-                }*/
+                    throw_coordinate = Dungeon.dungeon.Plr.transform;
+                    //Dungeon.dungeon.currentlevel.temp_gameobjects[(int)throw_coordinate.position.x, (int)throw_coordinate.position.y].GetComponent<SpriteRenderer>().color = new Color(0.2f, 0.2f, 0.2f, 1); 이러면 플레이어턴에 시야 처리하면서 다시 되돌아온다
+                    this.cooltime = this.maxcooltime;
+                }
                 else if (route_pos.Count > 0)
                 {
                     //transform.position = new Vector2(route_pos[0] % Dungeon.dungeon.currentlevel.width, route_pos[0] / Dungeon.dungeon.currentlevel.width);
@@ -47,9 +59,10 @@ namespace ArcanaDungeon.Object
 
         }
 
-        public void DivideSelf(int dmg) // 받은 피해량에 비례하는 체력을 가진 슬라임 소환. 일정 피해 이상을 받으면 발동하지 않는다.
+        public void HpChange(int val) // 받은 피해량에 비례하는 체력을 가진 슬라임 소환. 일정 피해 이상을 받으면 발동하지 않는다.
         {
-            if(dmg > 20)
+            base.HpChange(val);
+            if(val >= 20 & GetHp() > 0)
             {
                 Debug.Log("슬라임 일부가 떨어져 나오지만, 이내 힘없이 무너져 내립니다.");
                 return;

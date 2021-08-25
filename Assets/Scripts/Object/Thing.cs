@@ -10,24 +10,26 @@ namespace ArcanaDungeon.Object
     public abstract class Thing : MonoBehaviour
     {
         private int hp;
-        protected int maxhp = 300; // 최대 체력 임의로 설정했어요.jgh.
+        public int maxhp = 300; // 최대 체력 임의로 설정했어요.jgh.
         private int stamina;
-        protected int maxstamina;
+        public int maxstamina = 100;
 
         private int block;
         private int vision_distance;
         public int isTurn;  //1 이상일 경우 이 객체의 턴이다, 0일 경우 단순히 이 객체의 턴이 아닌 것이며, 음수일 경우 기절 등의 이유로 턴이 생략될 것이다
 
         public List<int> route_pos = new List<int>();  //목적지까지의 이동 경로, 이동은 항상 route_pos[0]으로 이동해서 진행된다
-        private string[] text;  //물체의 이름과 설명
 
-        private Dictionary<int,int> condition;  //상태이상 및 버프 표시, 키값은 상태이상 종류이며 가치값은 지속시간, 키값에 따른 효과 : 0=연소 / 1=기절 / 
+        private Dictionary<int,int> condition;  //상태이상 및 버프 표시, key는 상태이상 종류이며 value는 지속시간, key에 따른 효과 : 0=연소 / 1=기절 / 2=급류 / 3=중독
 
         public string name;
 
         public Thing()
         {
             condition = new Dictionary<int, int>();
+            this.vision_distance = 6;
+            this.hp = 0;
+            this.stamina = 0;
         }
 
         public abstract void Spawn();
@@ -149,7 +151,7 @@ namespace ArcanaDungeon.Object
         public void condition_process()
         {
             if (this.condition[0] > 0) { //연소
-                HpChange(-this.maxhp / 10);
+                HpChange(-10);
                 this.condition[0] -= 1;
             }
             if (this.condition[1] > 0) {    //기절
@@ -160,12 +162,8 @@ namespace ArcanaDungeon.Object
                 StaminaChange(15);
                 this.condition[2] -= 1;
             }
-            if (this.condition[3] > 0) {    //풀묶기
-                if ((Terrain.thing_tag[Dungeon.dungeon.currentlevel.map[(int)transform.position.x, (int)transform.position.y]] & Terrain.water) != 0) { //물 타일 위에 있으면 스태미나 감소량 증가
-                    StaminaChange(-30);
-                } else {
-                    StaminaChange(-15);
-                }
+            if (this.condition[3] > 0) {    //중독
+                HpChange(-condition[3]);    //연소와 달리 현재 부여된 중독만큼 피해를 받음
                 this.condition[3] -= 1;
             }
         }

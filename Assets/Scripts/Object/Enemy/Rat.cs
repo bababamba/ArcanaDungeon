@@ -10,6 +10,11 @@ namespace ArcanaDungeon.Object
     {
         public void Awake()
         {
+            this.maxhp = 115;
+            this.maxstamina = 100;
+            HpChange(this.maxhp);
+            StaminaChange(this.maxstamina);
+
             this.name = "Rat";
         }
     }

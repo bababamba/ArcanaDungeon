@@ -10,6 +10,8 @@ namespace ArcanaDungeon.Object
 {
     public class Enemy : Thing
     {
+        protected int cooltime;
+        public int maxcooltime;
 
         bool isawaken;  //★이 함수가 정말 필요한지는 차차 생각해보자
 
@@ -27,14 +29,15 @@ namespace ArcanaDungeon.Object
         }
 
         public void FixedUpdate()
-        { //★몬스터 알고리즘 확인용 임시 함수, 나중에 꼭 삭제할 것
+        {
             if (isTurn > 0)
             {
                 Vision_research();
 
                 if (Dungeon.distance_cal(Dungeon.dungeon.Plr.transform, this.transform) <= 1 & Plr_pos[0, 0] != -1)
                 {
-                    Debug.Log("몬스터가 당신을 공격하려고 합니다. 근데 아직 구현이 안 돼서 못 하네요. 저런!");
+                    Debug.Log(this.name + "이(가) 당신을 공격합니다.");
+                    Dungeon.dungeon.Plr.HpChange(-10);  //★Floor에 따라 변경되는 공격력을 변수에 집어넣어서 그 변수만큼만 깎아야 한다
                 }
                 else if (route_pos.Count > 0)
                 {
@@ -104,9 +107,8 @@ namespace ArcanaDungeon.Object
             }
         }
 
-        protected void range_attack(int dest_x, int dest_y, int val, bool pierce) { //원거리 공격, 스킬이나 기본 공격 등에서 사용할 것, pierce는 공격 범위 안의 모든 적을 공격하는 관통 공격일 경우 true가 된다
-            //이 몬스터의 현재 좌표부터 (dest_x,dest_y)까지 맞닿는 사각형 좌표들을 구해옴   
-            Debug.Log("range_attack까지는 실행됩니다.");
+        protected void range_attack(int dest_x, int dest_y, int val, bool pierce, bool friendly_fire) { //원거리 공격, pierce는 공격 범위 안의 모든 적을 공격하는 관통 공격일 경우 true, friendly_fire는 이 공격으로 아군도 공격 가능할 경우 true(보통 1턴 충전 뒤 지정한 위치로 발사하는 스킬에 사용될 예정)
+            //이 몬스터의 현재 좌표부터 (dest_x,dest_y)까지 맞닿는 사각형 좌표들을 구해옴
                 List<float[]> result = new List<float[]>();
                 if (dest_y-transform.position.y == 0){
                     for (float i=transform.position.x; i<=dest_x; i++){
@@ -147,7 +149,6 @@ namespace ArcanaDungeon.Object
                     }
                 }
                 
-            Debug.Log("공격 도중에 지나가는 좌표 수집 완료했습니다.");
             if (pierce){
                 foreach (GameObject t in Dungeon.dungeon.enemies[Dungeon.dungeon.currentlevel.floor-1]){
                     if (result.Contains(new float[2] { t.transform.position.x, t.transform.position.y})){
@@ -176,10 +177,13 @@ namespace ArcanaDungeon.Object
                 if (result.Contains(new float[2] { Dungeon.dungeon.Plr.transform.position.x, Dungeon.dungeon.Plr.transform.position.y}) & Dungeon.distance_cal(transform, Dungeon.dungeon.Plr.transform)<closest_distance){
                     closest = Dungeon.dungeon.Plr;  //closest_distance는 closest를 갱신할 때에만 필요하므로 마지막에 검사하는 플레이어 때에는 그 변수를 변경하지 않는다
                 }
-                if(closest == Dungeon.dungeon.Plr){
-                    Dungeon.dungeon.Plr.HpChange(-val);
-                    //★대충 하얀색 레이저가 시작점에서 도착점에 1초 정도 걸침
-                }else{
+                if(closest == Dungeon.dungeon.Plr | friendly_fire){
+                    closest.HpChange(-val);
+                    Dungeon.dungeon.GetComponent<LineRenderer>().SetPosition(0, new Vector3(transform.position.x, transform.position.y, -1));
+                    Dungeon.dungeon.GetComponent<LineRenderer>().SetPosition(1, new Vector3(dest_x, dest_y, -1));
+                    Dungeon.dungeon.GetComponent<LineRenderer>().SetColors(new Color(1f, 1f, 1f, 1f), new Color(1f, 1f, 1f, 1f));
+                }
+                else{
                     //★route_pos[0] 좌표로 이동, move()로 이동 관련 부분을 똑 떼어놓고 사용하는 게 나을 것 같다
                 }
             }
