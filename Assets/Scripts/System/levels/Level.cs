@@ -125,7 +125,7 @@ namespace ArcanaDungeon
                 switch (d.type)
                 {
                     case Room.Door.Type.EMPTY:
-                        map[d.x, d.y] = Terrain.EMPTY;
+                        map[d.x, d.y] = Terrain.GROUND;
                         break;
                     case Room.Door.Type.REGULAR:
                         map[d.x, d.y] = Terrain.DOOR;
@@ -227,7 +227,10 @@ namespace ArcanaDungeon
             {
                 r.MovePosition(xDir, yDir);
             }
-        }   
+        }
+
+        public abstract Vector2 SpawnPoint();
+        
     }
    
 }

@@ -173,6 +173,10 @@ namespace ArcanaDungeon
 
         }
 
+        public override Vector2 SpawnPoint()
+        {
+            return new Vector2();
+        }
         public override void SpawnMobs()
         {
             

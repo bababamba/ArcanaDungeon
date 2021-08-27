@@ -71,7 +71,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_Sprite: {fileID: -458641133534639524, guid: 39bdcf9c447593541b6e6a2e68a84920,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -96,6 +96,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e86ab205ae99c9845a56a01f7ecea7ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxhp: 300
+  maxstamina: 100
+  power: 0
+  exhausted: 0
   isTurn: 0
   route_pos: 
   name: 
+  maxcooltime: 0

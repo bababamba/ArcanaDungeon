@@ -96,6 +96,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 793666d27fdddf3408db74b6b93b44a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxhp: 300
+  maxstamina: 100
+  power: 0
+  exhausted: 0
   isTurn: 3
   route_pos: 
   name: 
+  maxcooltime: 0

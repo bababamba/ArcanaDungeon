@@ -330,5 +330,11 @@ namespace ArcanaDungeon.Object
                 }
             }
         }
+
+
+        public override void die()
+        {
+
+        }
     }
 }

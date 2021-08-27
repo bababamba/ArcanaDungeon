@@ -17,20 +17,37 @@ namespace ArcanaDungeon.Object
             this.name = "Crab";
         }
 
-        public void HpChange(int val)   //게는 20 이상의 피해를 1.5배로 받는 대신, 그 미만의 피해를 절반만 받음
+
+        public void HpChange(int val) //게는 20 이상의 피해를 1.5배로 받는 대신, 그 미만의 피해를 절반만 받음
         {
             if (val > 0)
             {
-                base.HpChange(this.maxhp);
+                if (this.hp + val > this.maxhp)
+                {
+                    this.hp = this.maxhp;
+                }
+                else
+                {
+                    this.hp += val;
+                }
             }
             else
             {
-                if (val >= 20)
+                if (val <= -20)
                 {
-                    base.HpChange((int)Math.Round(val * 1.5f));
+                    this.hp -= (int)(val * 1.5);
+                    if (this.hp < 0)
+                    {
+                        this.die();
+                    }
                 }
-                else {
-                    base.HpChange((int)Math.Round((float)val * 0.5f));
+                else
+                {
+                    this.hp -= (int)(val * 0.5);
+                    if (this.hp < 0)
+                    {
+                        this.die();
+                    }
                 }
             }
         }

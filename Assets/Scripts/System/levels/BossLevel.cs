@@ -13,6 +13,7 @@ namespace ArcanaDungeon
 {
     public class BossLevel : Level
     {
+        
         public override void InitRooms()
         {
             levelsize = LevelSize.SMALL;
@@ -57,6 +58,25 @@ namespace ArcanaDungeon
                 Debug.Log("Bossroom Spawned.");
 
 
+        }
+
+        public override Vector2 SpawnPoint()
+        {
+            Vector2 point = new Vector2();
+
+            foreach(Room r in rooms)
+            {
+                if (r.GetType() == typeof(DownStairsRoom))
+                {
+                    Room.Door door = r.connection.Values.ToList()[0];
+                    point = new Vector2(door.x, door.y);
+
+                }
+                else
+                    continue;
+            }
+
+            return point;
         }
 
         public override void SpawnMobs()

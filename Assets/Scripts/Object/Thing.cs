@@ -9,11 +9,13 @@ namespace ArcanaDungeon.Object
 {
     public abstract class Thing : MonoBehaviour
     {
-        private int hp;
+        protected int hp;
         public int maxhp = 300; // 최대 체력 임의로 설정했어요.jgh.
-        private int stamina;
+        protected int stamina;
         public int maxstamina = 100;
+        public int power;
 
+        public bool exhausted = false;
         private int block;
         private int vision_distance;
         public int isTurn;  //1 이상일 경우 이 객체의 턴이다, 0일 경우 단순히 이 객체의 턴이 아닌 것이며, 음수일 경우 기절 등의 이유로 턴이 생략될 것이다
@@ -148,13 +150,13 @@ namespace ArcanaDungeon.Object
         }
 
         //상태이상 처리 관련 함수
-        public void condition_process()
+        public void condition_process() // 번호에 각 상태이상 이름 및 효과 기재바람.
         {
-            if (this.condition[0] > 0) { //연소
+            if (this.condition[0] > 0) { //연소 - 고정된 양의 피해를 일정 턴동안 받는다. 중독에 비해 초기 수치가 높아야 한다. 물에 접촉 시 즉시 해제되어야 한다.
                 HpChange(-10);
                 this.condition[0] -= 1;
             }
-            if (this.condition[1] > 0) {    //기절
+            if (this.condition[1] > 0) {    //기절 - 1턴동안 행동할 수 없다.(무한스턴 방지용 대책이 필요할수 있음)
                 this.isTurn -= 1;
                 this.condition[1] -= 1;
             }
@@ -162,13 +164,13 @@ namespace ArcanaDungeon.Object
                 StaminaChange(15);
                 this.condition[2] -= 1;
             }
-            if (this.condition[3] > 0) {    //중독
-                HpChange(-condition[3]);    //연소와 달리 현재 부여된 중독만큼 피해를 받음
+            if (this.condition[3] > 0) {    //중독 - 중첩형 상태이상. 중첩 횟수와 같은 양의 피해를 받고, 중첩이 1 감소한다. 이렇게 중첩이 0이 될 경우, 중독이 해제된다.
+                HpChange(-condition[3]);    
                 this.condition[3] -= 1;
             }
         }
 
-        public void condition_add(int key, int val) {
+        public void condition_add(int key, int val) { // key는 상태이상 번호, val은 상태이상 수치. 중독 2일 경우, key는 3, val은 2
             if (condition.ContainsKey(key)) {
                 condition[key] += val;
             } else {
@@ -176,7 +178,30 @@ namespace ArcanaDungeon.Object
             }
         }
 
-        public void die() { } //★나중에 자기자신을 map[]에서 삭제하는 정도는 넣어두자
+         
+
+        public abstract void die();//★나중에 자기자신을 map[]에서 삭제하는 정도는 넣어두자
         public abstract void turn();
+
+
+        //자신이 아닌 상대의 상태를 변화시키는 기능들은 이 아래로 추가 바람.
+        //
+
+        public void HpChange(Thing target, int val)
+        {
+            target.HpChange(val);
+        }
+
+        public void condition_add(Thing target, int key, int val)
+        {
+            if (target.condition.ContainsKey(key))
+            {
+                target.condition[key] += val;
+            }
+            else
+            {
+                target.condition.Add(key, val);
+            }
+        }
     }
 }

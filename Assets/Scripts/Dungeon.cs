@@ -267,6 +267,7 @@ namespace ArcanaDungeon
                 for (int i = 0; i < currentlevel.maxEnemies; i++)
                 {
                     GameObject mob;
+                    Vector2 pos = new Vector2();
                     switch (currentlevel.biome)
                     {
                         case Biome.FIRE:
@@ -280,15 +281,23 @@ namespace ArcanaDungeon
                             break;
                     }
 
-                    Vector2 pos = new Vector2();
-                    while (true)
+                    if (currentlevel.biome == Biome.BOSS_SLIME)
                     {
-                        int x = random.Next(0, currentlevel.levelr.xMax);
-                        int y = random.Next(0, currentlevel.levelr.yMax);
-                        if (currentlevel.map[x, y] == Terrain.GROUND)
+                        Vector2 point = currentlevel.SpawnPoint();
+                        pos = new Vector2(point.x - 1, point.y - 3);
+
+                    }
+                    else
+                    {
+                        while (true)
                         {
-                            pos = new Vector2(x, y);
-                            break;
+                            int x = random.Next(0, currentlevel.levelr.xMax);
+                            int y = random.Next(0, currentlevel.levelr.yMax);
+                            if (currentlevel.map[x, y] == Terrain.GROUND)
+                            {
+                                pos = new Vector2(x, y);
+                                break;
+                            }
                         }
                     }
                     enemylist.Add(Instantiate(mob, pos, Quaternion.identity));
