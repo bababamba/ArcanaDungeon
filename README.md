@@ -36,7 +36,7 @@ Visual Studio
 Github
 
 ## 5. 프로젝트 구조 
-
+```
 ├─Assets
 │  ├─Resources
 │  │  ├─prefabs
@@ -88,3 +88,4 @@ Github
 ├─Temp
 │  └─RefreshSync
 └─UserSettings
+```
